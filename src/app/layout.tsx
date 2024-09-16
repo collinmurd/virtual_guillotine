@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import "./globals.css";
 import { getSession } from "@/session";
 import { logIn, logOut } from "./actions";
+import { cookies } from "next/headers";
 
 export const metadata: Metadata = {
   title: "Create Next App",

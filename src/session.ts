@@ -1,9 +1,8 @@
-'use server';
 
-import { getIronSession, IronSession } from "iron-session";
-import { redirect } from "next/navigation";
-import { revalidatePath } from "next/cache";
+import 'server-only';
+import { getIronSession, IronSession, unsealData } from "iron-session";
 import { cookies } from "next/headers";
+import { revalidatePath } from 'next/cache';
 
 export interface SessionData {
   accessToken: string
@@ -14,12 +13,13 @@ const sessionOpts = {
   cookieName: 'virtual-guillotine-session'
 }
 
-export async function getSession(): Promise<IronSession<SessionData> | null> {
-  const session = await getIronSession<SessionData>(cookies(), sessionOpts);
-
-  if (!session.accessToken) {
-    return null;
-  }
+export async function getSession(): Promise<SessionData | null> {
+  const encryptedSession = cookies().get(sessionOpts.cookieName)?.value;
+  const session = encryptedSession
+    ? await unsealData<SessionData>(encryptedSession, {
+        password: sessionOpts.password
+      })
+    : null;
 
   return session;
 }
@@ -28,6 +28,10 @@ export async function setSession(data: SessionData) {
   const session = await getIronSession<SessionData>(cookies(), sessionOpts);
   session.accessToken = data.accessToken;
   await session.save();
-  revalidatePath('/');
 }
 
+export async function destroySession() {
+  const session = await getIronSession<SessionData>(cookies(), sessionOpts);
+  session.destroy();
+  revalidatePath('/');
+}

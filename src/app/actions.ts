@@ -1,6 +1,6 @@
 'use server';
 
-import { getSession } from "@/session";
+import { destroySession, getSession } from "@/session";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 
@@ -17,9 +17,5 @@ export async function logIn() {
 }
 
 export async function logOut() {
-  const session = await getSession();
-  if (session) {
-    session.destroy();
-  }
-  revalidatePath('/');
+  destroySession();
 }
