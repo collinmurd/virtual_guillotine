@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
-import localFont from "next/font/local";
 import "./globals.css";
+import { getSession } from "@/session";
+import { logIn, logOut } from "./actions";
 
 export const metadata: Metadata = {
   title: "Create Next App",
@@ -15,8 +16,29 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body>
+        <header>
+          <Account />
+        </header>
         {children}
       </body>
     </html>
   );
+}
+
+async function Account() {
+  const session = await getSession();
+
+  if (session) {
+    return (
+      <form action={logOut}>
+        <button>Log Out</button>
+      </form>
+    )
+  } else {
+    return (
+      <form action={logIn}>
+        <button type="submit">Log In</button>
+      </form>
+    );
+  }
 }

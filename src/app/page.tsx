@@ -1,5 +1,5 @@
 
-export default function Home() {
+export default function Scoreboard() {
   return (
     <div>
       Hello, World
