@@ -1,6 +1,7 @@
 'use server';
 
 import { setSession } from "@/session";
+import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 
 export async function handleAuth(accessCode: string) {
@@ -20,7 +21,9 @@ export async function handleAuth(accessCode: string) {
 
   // TODO handle error
   const data = await getToken.json();
-  await setSession({
+  await setSession(
+    cookies(),
+  {
     accessToken: data.token,
     exp: (new Date()) + data.expires_in,
     refreshToken: data.refresh_token
