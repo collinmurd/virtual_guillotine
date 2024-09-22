@@ -27,7 +27,7 @@ export default function RootLayout({
 }
 
 async function Account() {
-  const session = await getSession();
+  const session = await getSession(cookies());
 
   if (session) {
     return (

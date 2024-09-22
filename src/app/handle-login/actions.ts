@@ -24,7 +24,7 @@ export async function handleAuth(accessCode: string) {
   await setSession(
     cookies(),
   {
-    accessToken: data.token,
+    accessToken: data.access_token,
     exp: (new Date()) + data.expires_in,
     refreshToken: data.refresh_token
   });

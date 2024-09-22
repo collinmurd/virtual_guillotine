@@ -23,6 +23,10 @@ export async function getSession(cookies: any): Promise<SessionData | null> {
       })
     : null;
 
+  if (!session?.accessToken) {
+    return null;
+  }
+
   return session;
 }
 

@@ -1,11 +1,11 @@
 'use server';
 
 import { destroySession, getSession } from "@/session";
-import { revalidatePath } from "next/cache";
+import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 
 export async function logIn() {
-  const session = await getSession();
+  const session = await getSession(cookies());
 
   // redirect to request_auth
   if (!session) {
@@ -17,5 +17,5 @@ export async function logIn() {
 }
 
 export async function logOut() {
-  destroySession();
+  await destroySession(cookies());
 }
