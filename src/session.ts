@@ -5,7 +5,9 @@ import { cookies } from "next/headers";
 import { revalidatePath } from 'next/cache';
 
 export interface SessionData {
-  accessToken: string
+  accessToken: string,
+  exp: Date,
+  refreshToken: string,
 }
 
 const sessionOpts = {
@@ -27,6 +29,8 @@ export async function getSession(): Promise<SessionData | null> {
 export async function setSession(data: SessionData) {
   const session = await getIronSession<SessionData>(cookies(), sessionOpts);
   session.accessToken = data.accessToken;
+  session.exp = data.exp;
+  session.refreshToken = data.refreshToken;
   await session.save();
 }
 

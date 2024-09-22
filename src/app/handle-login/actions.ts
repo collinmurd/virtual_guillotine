@@ -19,7 +19,11 @@ export async function handleAuth(accessCode: string) {
   });
 
   // TODO handle error
-  const token = (await getToken.json()).token;
-  await setSession({accessToken: token});
+  const data = await getToken.json();
+  await setSession({
+    accessToken: data.token,
+    exp: (new Date()) + data.expires_in,
+    refreshToken: data.refresh_token
+  });
   redirect('/');
 }
