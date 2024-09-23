@@ -1,5 +1,5 @@
+import { getLeagueStatsForWeek } from "@/apis/yahoo";
 import { getSession } from "@/session";
-import { getLeagueStatsForWeek } from "@/yahooApi";
 import { cookies } from "next/headers";
 
 export default async function Scoreboard() {
