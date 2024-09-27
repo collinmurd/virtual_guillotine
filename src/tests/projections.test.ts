@@ -1,5 +1,4 @@
 import { getNFLScoreboard } from "@/apis/espn";
-import { getAllPlayerProjections, SleeperPlayer } from "@/apis/sleeper";
 import { getTeamsWithPlayers } from "@/apis/yahoo";
 import { getAllLeagueProjections } from "@/stats/projections";
 import { readFileSync } from "fs";
@@ -8,6 +7,41 @@ jest.mock('../apis/espn');
 jest.mock('../apis/sleeper');
 jest.mock('../apis/yahoo');
 jest.mock('fs');
+
+const mockPlayerMap: { [player_id: string]: SleeperPlayer } = {
+  "1": { // rem. proj = 2.66666
+    player_id: "1",
+    number: 1,
+    full_name: "Joe Burrow",
+    team: "CIN",
+    fantasy_positions: ["QB"]
+  },
+  "2": { // 3.03999
+    player_id: "2",
+    number: 2,
+    full_name: "Nick Chubb",
+    team: "CLE",
+    fantasy_positions: ["RB"]
+  },
+  "CIN": { // 1.2799999
+    player_id: "CIN",
+    full_name: undefined,
+    number: undefined,
+    team: "CIN",
+    fantasy_positions: ["DEF"]
+  },
+  "4": { // 6.8
+    player_id: "4",
+    number: 4,
+    full_name: "Some Guy",
+    team: "",
+    fantasy_positions: ["PIT"]
+  }
+};
+
+(readFileSync as jest.Mock).mockReturnValue(mockPlayerMap);
+
+import { getAllPlayerProjections, SleeperPlayer } from "@/apis/sleeper";
 
 const mockGames = [
   {
@@ -53,37 +87,6 @@ const mockPlayerProjections = {
   "4": { // 6.8
     "xpmiss": 0.1,
     "fgm_yds": 78
-  }
-}
-
-const mockPlayerMap: { [player_id: string]: SleeperPlayer } = {
-  "1": { // rem. proj = 2.66666
-    player_id: "1",
-    number: 1,
-    full_name: "Joe Burrow",
-    team: "CIN",
-    fantasy_positions: ["QB"]
-  },
-  "2": { // 3.03999
-    player_id: "2",
-    number: 2,
-    full_name: "Nick Chubb",
-    team: "CLE",
-    fantasy_positions: ["RB"]
-  },
-  "CIN": { // 1.2799999
-    player_id: "CIN",
-    full_name: undefined,
-    number: undefined,
-    team: "CIN",
-    fantasy_positions: ["DEF"]
-  },
-  "4": { // 6.8
-    player_id: "4",
-    number: 4,
-    full_name: "Some Guy",
-    team: "",
-    fantasy_positions: ["PIT"]
   }
 }
 
@@ -166,7 +169,6 @@ describe('calculateTeamProjections', () => {
     (getNFLScoreboard as jest.Mock).mockReturnValue(mockGames);
     (getAllPlayerProjections as jest.Mock).mockReturnValue(mockPlayerProjections);
     (getTeamsWithPlayers as jest.Mock).mockReturnValue(mockTeamsAndPlayers);
-    (readFileSync as jest.Mock).mockReturnValue(JSON.stringify(mockPlayerMap));
   });
 
   it('should return a list with current projections', async () => {
