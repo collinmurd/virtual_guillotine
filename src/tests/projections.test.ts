@@ -1,76 +1,70 @@
 import { getNFLScoreboard } from "@/apis/espn";
 import { getTeamsWithPlayers } from "@/apis/yahoo";
 import { getAllLeagueProjections } from "@/stats/projections";
-import { readFileSync } from "fs";
+import { getAllPlayerProjections, SleeperPlayer } from "@/apis/sleeper";
 
 jest.mock('../apis/espn');
 jest.mock('../apis/sleeper');
 jest.mock('../apis/yahoo');
-jest.mock('fs');
+jest.mock('../apis/sleeperPlayerMap', (): { [player_id: string]: SleeperPlayer } => {
+  return {
+    "1": { // rem. proj = 2.66666
+      player_id: "1",
+      number: 1,
+      full_name: "Joe Burrow",
+      team: "CIN",
+      fantasy_positions: ["QB"]
+    },
+    "2": { // 3.03999
+      player_id: "2",
+      number: 2,
+      full_name: "Nick Chubb",
+      team: "CLE",
+      fantasy_positions: ["RB"]
+    },
+    "CIN": { // 1.2799999
+      player_id: "CIN",
+      full_name: undefined,
+      number: undefined,
+      team: "CIN",
+      fantasy_positions: ["DEF"]
+    },
+    "4": { // 6.8
+      player_id: "4",
+      number: 4,
+      full_name: "Some Guy",
+      team: "",
+      fantasy_positions: ["PIT"]
+    }
+  };
+});
 
-const mockPlayerMap: { [player_id: string]: SleeperPlayer } = {
-  "1": { // rem. proj = 2.66666
-    player_id: "1",
-    number: 1,
-    full_name: "Joe Burrow",
-    team: "CIN",
-    fantasy_positions: ["QB"]
-  },
-  "2": { // 3.03999
-    player_id: "2",
-    number: 2,
-    full_name: "Nick Chubb",
-    team: "CLE",
-    fantasy_positions: ["RB"]
-  },
-  "CIN": { // 1.2799999
-    player_id: "CIN",
-    full_name: undefined,
-    number: undefined,
-    team: "CIN",
-    fantasy_positions: ["DEF"]
-  },
-  "4": { // 6.8
-    player_id: "4",
-    number: 4,
-    full_name: "Some Guy",
-    team: "",
-    fantasy_positions: ["PIT"]
-  }
+const mockGames = {
+  events: [
+    {
+      shortName: 'CIN @ CLE',
+      competitions: [
+        {
+          status: {
+            clock: 60.0,
+            period: 3 // 960 to go in the game - 0.2666666
+          }
+        }
+      ]
+    },
+    {
+      shortName: 'PIT @ BAL',
+      competitions: [
+        {
+          status: {
+            clock: 900.0,
+            period: 1
+          }
+        }
+      ]
+    },
+  ]
 };
-
-(readFileSync as jest.Mock).mockReturnValue(mockPlayerMap);
-
-import { getAllPlayerProjections, SleeperPlayer } from "@/apis/sleeper";
-
-const mockGames = [
-  {
-    events: [
-      {
-        shortName: 'CIN @ CLE',
-        competitions: [
-          {
-            status: {
-              clock: 60.0,
-              period: 3 // 960 to go in the game - 0.2666666
-            }
-          }
-        ]
-      },
-      {
-        shortName: 'PIT @ BAL',
-        competitions: [
-          {
-            status: {
-              clock: 900.0,
-              period: 1
-            }
-          }
-        ]
-      },
-    ]
-  }
-];
 
 const mockPlayerProjections = {
   "1": { // 10

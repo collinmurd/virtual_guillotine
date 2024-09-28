@@ -1,6 +1,6 @@
 import 'server-only';
-import * as fs from 'fs';
 import constants from '@/constants';
+import playerMap from './sleeperPlayerMap';
 
 // only a subset of attributes in the data. only what I think I'll need
 // NOTE yahoo_id and espn_id aren't filled in for some players, so I'm not going to trust them
@@ -17,7 +17,6 @@ export interface SleeperPlayer {
   projections?: {[stat: string]: number}
 }
 
-const playerMap: { [player_id: string]: SleeperPlayer } = JSON.parse(fs.readFileSync('data/sleeperPlayerMap.json', 'utf8'));
 
 function deepCopy(obj: any): any {
   return JSON.parse(JSON.stringify(obj));
