@@ -1,7 +1,7 @@
-import { getNFLScoreboard } from "@/apis/espn";
-import { getAllPlayerProjections, SleeperPlayer } from "@/apis/sleeper";
+import * as espn from "@/apis/espn";
+import  * as sleeper from "@/apis/sleeper";
 import { stats } from "./statMap";
-import { getTeamsWithPlayers } from "@/apis/yahoo";
+import * as yahoo from "@/apis/yahoo";
 
 
 // only a subset of data I need rn from espn
@@ -11,7 +11,7 @@ interface GameStatus {
   quarter: number
 }
 async function getGameStatuses(): Promise<GameStatus[]> {
-  const scoreboard = await getNFLScoreboard();
+  const scoreboard = await espn.getNFLScoreboard();
 
   return scoreboard.events.map((event: any) => {
     return {
@@ -24,18 +24,21 @@ async function getGameStatuses(): Promise<GameStatus[]> {
 
 function calculateRemainingPlayerProjection(game: GameStatus | null, playerProjections: {[stat: string]: number}): number {
   // ignoring OT possibilities for now
-  let gameProgress = 1;
+  let gameProgressRemaining = 1;
   if (game) {
-    gameProgress = (60 * 15 - game.clock) + (game.quarter - 1) * 600;
+    const quartersCompleted = game.quarter - 1;
+    const secondsCompletedInQuarter = 60 * 15 - game.clock; 
+    const completedSeconds = quartersCompleted * 60 * 15 + secondsCompletedInQuarter;
+    gameProgressRemaining = 1 - (completedSeconds / 3600);
   }
 
   return Object.entries(playerProjections).reduce((accumulator, [stat, value]) => {
     const mapped = stats[stat];
-    return accumulator + (value * mapped.weight * gameProgress)
+    return accumulator + (value * mapped.weight * gameProgressRemaining)
   }, 0);
 }
 
-function calculateRemainingTeamProjection(games: GameStatus[], players: SleeperPlayer[]): number {
+function calculateRemainingTeamProjection(games: GameStatus[], players: sleeper.SleeperPlayer[]): number {
   return players.reduce((accumulator, player) => {
     if (player.team) {
       const game = games.find(g => g.name.includes(player.team!)) || null;
@@ -46,6 +49,26 @@ function calculateRemainingTeamProjection(games: GameStatus[], players: SleeperP
   }, 0);
 }
 
+function getPlayerProjectionsForFantasyTeam(
+  fantasyTeam: yahoo.YahooTeam, // team and player response from yahoo
+  players: sleeper.SleeperPlayer[],
+): sleeper.SleeperPlayer[] {
+  const fantasyTeamPlayers = fantasyTeam.players;
+  return players.filter(sleeperPlayer => {
+    return fantasyTeamPlayers.some(yahooPlayer => {
+      if (yahooPlayer.player.primary_position === 'DEF') {
+        return yahooPlayer.player.editorial_team_abbr.toUpperCase() === sleeperPlayer.player_id;
+      } else {
+        return (
+          yahooPlayer.player.name.full === sleeperPlayer.full_name &&
+          yahooPlayer.player.uniform_number === sleeperPlayer.number?.toString() &&
+          yahooPlayer.player.editorial_team_abbr.toUpperCase() === sleeperPlayer.team
+        );
+      }
+    });
+  });
+}
+
 export async function getAllLeagueProjections(
   week: number,
   currentScores: {teamId: number, points: number}[]
@@ -54,13 +77,21 @@ export async function getAllLeagueProjections(
   points: number
 }[]> {
   const games = await getGameStatuses();
-  const playerProjections = await getAllPlayerProjections(week);
-  const teamsAndPlayers = await getTeamsWithPlayers();
+  const allPlayerProjections = await sleeper.getAllPlayerProjections(week);
+  const fantasyTeamsAndPlayers = await yahoo.getTeamsWithPlayers();
 
   return currentScores.map(team => {
+    const yahooTeam = fantasyTeamsAndPlayers.find(t => t.team_id === team.teamId.toString());
+    if (!yahooTeam) {
+      throw new Error("Team not found in Yahoo response");
+    }
+
+    const fantasyTeamPlayers = getPlayerProjectionsForFantasyTeam(yahooTeam, allPlayerProjections);
+
+    const remainingProj = calculateRemainingTeamProjection(games, fantasyTeamPlayers);
     return {
       teamId: team.teamId,
-      points: calculateRemainingTeamProjection(games, [])
+      points: team.points + remainingProj
     }
   });
 }

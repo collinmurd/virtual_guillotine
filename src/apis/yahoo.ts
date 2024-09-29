@@ -33,7 +33,7 @@ export async function getLeagueStatsForWeek(week: string = "current") {
   return (await resp.json()).fantasy_content.league;
 }
 
-export async function getTeamsWithPlayers() {
+export async function getTeamsWithPlayers(): Promise<YahooTeam[]> {
   const resp = await fetch(
     `https://fantasysports.yahooapis.com/fantasy/v2/league/nfl.l.${constants.YAHOO_LEAGUE_ID}/teams/players?format=json_f`, {
       headers: {
@@ -42,5 +42,28 @@ export async function getTeamsWithPlayers() {
     }
   );
 
-  return (await resp.json()).fantasy_content.league;
+  return (await resp.json()).fantasy_content.league.teams.map((t: any) => t.team);
+}
+
+
+// TYPES
+export interface YahooTeam {
+  team_id: string,
+  name: string,
+  players: {
+    player: YahooPlayer
+  }[]
+}
+
+export interface YahooPlayer {
+  player_id: string,
+  name: {
+    full: string,
+    first: string,
+    last: string | null
+  },
+  editorial_team_abbr: string,
+  by_weeks: { week: string }[],
+  uniform_number: string | null,
+  primary_position: string
 }
