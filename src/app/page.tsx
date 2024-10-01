@@ -4,7 +4,6 @@ import { cookies } from "next/headers";
 
 export default async function Scoreboard() {
   if (!(await getSession(cookies()))) {
-    console.log('no session')
     return <></>
   }
 

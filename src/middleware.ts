@@ -4,7 +4,7 @@ import { getSession, setSession } from "./session";
 export async function middleware(req: NextRequest) {
   // refresh yahoo access token if necessary
   const session = await getSession(req.cookies);
-  if (session && session.exp! < new Date()) {
+  if (session && session.tokenExp! < new Date()) {
     console.log('refreshing token...')
     const getToken = await fetch('https://api.login.yahoo.com/oauth2/get_token', {
       method: 'POST',
@@ -24,10 +24,11 @@ export async function middleware(req: NextRequest) {
     await setSession(
       req.cookies,
       {
-      accessToken: data.token,
-      exp: (new Date()) + data.expires_in,
-      refreshToken: data.refresh_token
-    });
+        accessToken: data.token,
+        tokenExp: (new Date()) + data.expires_in,
+        refreshToken: data.refresh_token
+      }
+    );
   }
 }
 
