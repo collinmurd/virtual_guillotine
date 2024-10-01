@@ -38,7 +38,7 @@ export async function getSession(cookies: RequestCookies | ReadonlyRequestCookie
   });
 }
 
-export async function setSession(cookies: RequestCookies, data: SessionData) {
+export async function setSession(cookies: RequestCookies | ReadonlyRequestCookies, data: SessionData) {
   const jwt = await new EncryptJWT({...data})
     .setProtectedHeader({ alg: 'dir', enc: 'A128CBC-HS256' })
     .setIssuedAt()

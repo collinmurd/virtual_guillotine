@@ -25,7 +25,7 @@ export async function handleAuth(accessCode: string) {
     cookies(),
   {
     accessToken: data.access_token,
-    exp: (new Date()) + data.expires_in,
+    tokenExp: (new Date()) + data.expires_in,
     refreshToken: data.refresh_token
   });
   redirect('/');
