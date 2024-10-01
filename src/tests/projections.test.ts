@@ -73,7 +73,8 @@ const projections: {[id: string]: any} = {
   },
   "2": { // 11.4
     "rush_yd": 66,
-    "rush_td": 0.8
+    "rush_td": 0.8,
+    "adp_dd_ppr": 1.3 // not in our stat map. should ignore
   },
   "CIN": { // 4.8
     "sack": 3.2,

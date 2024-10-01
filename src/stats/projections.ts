@@ -34,7 +34,11 @@ function calculateRemainingPlayerProjection(game: GameStatus | null, playerProje
 
   return Object.entries(playerProjections).reduce((accumulator, [stat, value]) => {
     const mapped = stats[stat];
-    return accumulator + (value * mapped.weight * gameProgressRemaining)
+    if (mapped) {
+      return accumulator + (value * mapped.weight * gameProgressRemaining);
+    } else {
+      return accumulator;
+    }
   }, 0);
 }
 
@@ -51,22 +55,23 @@ function calculateRemainingTeamProjection(games: GameStatus[], players: sleeper.
 
 function getPlayerProjectionsForFantasyTeam(
   fantasyTeam: yahoo.YahooTeam, // team and player response from yahoo
-  players: sleeper.SleeperPlayer[],
+  sleeperPlayers: sleeper.SleeperPlayer[],
 ): sleeper.SleeperPlayer[] {
-  const fantasyTeamPlayers = fantasyTeam.players;
-  return players.filter(sleeperPlayer => {
-    return fantasyTeamPlayers.some(yahooPlayer => {
-      if (yahooPlayer.player.primary_position === 'DEF') {
-        return yahooPlayer.player.editorial_team_abbr.toUpperCase() === sleeperPlayer.player_id;
-      } else {
-        return (
-          yahooPlayer.player.name.full === sleeperPlayer.full_name &&
-          yahooPlayer.player.uniform_number === sleeperPlayer.number?.toString() &&
-          yahooPlayer.player.editorial_team_abbr.toUpperCase() === sleeperPlayer.team
-        );
-      }
-    });
+  return fantasyTeam.players!.map(yahooPlayer => {
+    return sleeperPlayers.find(sleeperPlayer => matchPlayer(sleeperPlayer, yahooPlayer.player))!
   });
+}
+
+function matchPlayer(sleeperPlayer: sleeper.SleeperPlayer, yahooPlayer: yahoo.YahooPlayer): boolean {
+  if (yahooPlayer.primary_position === 'DEF') {
+    return yahooPlayer.editorial_team_abbr.toUpperCase() === sleeperPlayer.player_id;
+  } else {
+    return (
+      yahooPlayer.name.full === sleeperPlayer.full_name &&
+      yahooPlayer.uniform_number === sleeperPlayer.number?.toString() &&
+      yahooPlayer.editorial_team_abbr.toUpperCase() === sleeperPlayer.team
+    );
+  }
 }
 
 export async function getAllLeagueProjections(
