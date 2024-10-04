@@ -39,9 +39,9 @@ export default async function Scoreboard() {
   const tableData = leagueStats.map(team => {
     return (
       <tr key={team.team_id}>
-        <th scope="row">{team.name}</th>
-        <td>{team.team_points!.total}</td>
-        <td>{leagueProjections.find(t => t.teamId.toString() === team.team_id)!.points}</td>
+        <th scope="row" className="flex flex-row-reverse border border-lime-400 px-3">{team.name}</th>
+        <td className="border border-lime-400 px-3">{team.team_points!.total}</td>
+        <td className="border border-lime-400 px-3">{leagueProjections.find(t => t.teamId.toString() === team.team_id)!.points}</td>
       </tr>
     )
   })
@@ -49,10 +49,10 @@ export default async function Scoreboard() {
   return (
     <div>
       <h2>Week: {league.current_week}</h2>
-      <table>
+      <table className="table-auto">
         <thead>
           <tr>
-            <th>Manager</th>
+            <th></th>
             <th>Scored</th>
             <th>Projected</th>
           </tr>
