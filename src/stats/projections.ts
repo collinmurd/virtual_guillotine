@@ -1,3 +1,4 @@
+import 'server-only'
 import * as espn from "@/apis/espn";
 import  * as sleeper from "@/apis/sleeper";
 import { stats } from "./statMap";
