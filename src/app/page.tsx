@@ -39,9 +39,11 @@ export default async function Scoreboard() {
   const tableData = leagueStats.map(team => {
     return (
       <tr key={team.team_id}>
-        <th scope="row" className="flex flex-row-reverse border border-lime-400 px-3">{team.name}</th>
-        <td className="border border-lime-400 px-3">{team.team_points!.total}</td>
-        <td className="border border-lime-400 px-3">{leagueProjections.find(t => t.teamId.toString() === team.team_id)!.points}</td>
+        <TableCell header extraClasses="flex flex-row-reverse">{team.name}</TableCell>
+        <TableCell header={false}>{team.team_points!.total}</TableCell>
+        <TableCell header={false}>
+          {leagueProjections.find(t => t.teamId.toString() === team.team_id)!.points}
+        </TableCell>
       </tr>
     )
   })
@@ -53,8 +55,8 @@ export default async function Scoreboard() {
         <thead>
           <tr>
             <th></th>
-            <th>Scored</th>
-            <th>Projected</th>
+            <TableCell header>Scored</TableCell>
+            <TableCell header>Projected</TableCell>
           </tr>
         </thead>
         <tbody>
@@ -63,6 +65,18 @@ export default async function Scoreboard() {
       </table>
     </div>
   );
+}
+
+function TableCell(props: {children: React.ReactNode, header: boolean, extraClasses?: string}) {
+  if (props.header) {
+    return (
+      <th className={props.extraClasses + " border border-lime-400 px-3"}>{props.children}</th>
+    );
+  } else {
+    return (
+      <td className={props.extraClasses + " border border-lime-400 px-3"}>{props.children}</td>
+    );
+  }
 }
 
 function LoadError() {
