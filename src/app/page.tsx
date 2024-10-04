@@ -2,13 +2,14 @@ import * as yahoo from "@/apis/yahoo";
 import { getSession } from "@/session";
 import { cookies } from "next/headers";
 import * as proj from '../stats/projections';
+import { ScoresTable, ScoresTableData } from "./table";
 
 export default async function Scoreboard() {
   if (!(await getSession(cookies()))) {
     return <></>
   }
 
-  const [league, leagueStats] = await Promise.all([
+  const [league, leagueTeams] = await Promise.all([
     yahoo.getLeague(),
     yahoo.getLeagueStatsForWeek(),
   ]).catch(e => {
@@ -16,13 +17,13 @@ export default async function Scoreboard() {
     return [null, null];
   });
 
-  if (!league || !leagueStats) {
+  if (!league || !leagueTeams) {
     return LoadError();
   }
 
   let leagueProjections = await proj.getAllLeagueProjections(
     league.current_week,
-    leagueStats.map(team => {return {teamId: parseInt(team.team_id), points: parseFloat(team.team_points!.total)}})
+    leagueTeams.map(team => {return {teamId: parseInt(team.team_id), points: parseFloat(team.team_points!.total)}})
   ).catch(e => {
     console.log(e);
     return null;
@@ -34,49 +35,23 @@ export default async function Scoreboard() {
 
   leagueProjections.map(p => {
     p.points = Math.round((p.points + Number.EPSILON) * 100) / 100
-  })
+  });
 
-  const tableData = leagueStats.map(team => {
-    return (
-      <tr key={team.team_id}>
-        <TableCell header extraClasses="flex flex-row-reverse">{team.name}</TableCell>
-        <TableCell header={false}>{team.team_points!.total}</TableCell>
-        <TableCell header={false}>
-          {leagueProjections.find(t => t.teamId.toString() === team.team_id)!.points}
-        </TableCell>
-      </tr>
-    )
+  const data: ScoresTableData[] = leagueTeams.map(team => {
+    return {
+      teamId: team.team_id,
+      manager: team.name,
+      score: parseFloat(team.team_points?.total!),
+      projectedScore: leagueProjections.find(t => t.teamId.toString() === team.team_id)!.points
+    }
   })
 
   return (
     <div>
       <h2>Week: {league.current_week}</h2>
-      <table className="table-auto">
-        <thead>
-          <tr>
-            <th></th>
-            <TableCell header>Scored</TableCell>
-            <TableCell header>Projected</TableCell>
-          </tr>
-        </thead>
-        <tbody>
-          {tableData}
-        </tbody>
-      </table>
+        <ScoresTable data={data}/>
     </div>
   );
-}
-
-function TableCell(props: {children: React.ReactNode, header: boolean, extraClasses?: string}) {
-  if (props.header) {
-    return (
-      <th className={props.extraClasses + " border border-lime-400 px-3"}>{props.children}</th>
-    );
-  } else {
-    return (
-      <td className={props.extraClasses + " border border-lime-400 px-3"}>{props.children}</td>
-    );
-  }
 }
 
 function LoadError() {
