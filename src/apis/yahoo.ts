@@ -81,7 +81,7 @@ export interface YahooPlayer {
     last: string | null
   },
   editorial_team_abbr: string,
-  by_weeks: { week: string }[],
+  bye_weeks: { week: string },
   uniform_number: string | null,
   primary_position: string
 }

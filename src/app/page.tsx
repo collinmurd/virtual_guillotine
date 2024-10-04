@@ -8,12 +8,30 @@ export default async function Scoreboard() {
     return <></>
   }
 
-  const league = await yahoo.getLeague();
-  const leagueStats = await yahoo.getLeagueStatsForWeek();
+  const [league, leagueStats] = await Promise.all([
+    yahoo.getLeague(),
+    yahoo.getLeagueStatsForWeek(),
+  ]).catch(e => {
+    console.log(e);
+    return [null, null];
+  });
+
+  if (!league || !leagueStats) {
+    return LoadError();
+  }
+
   const leagueProjections = await proj.getAllLeagueProjections(
     league.current_week,
     leagueStats.map(team => {return {teamId: parseInt(team.team_id), points: parseFloat(team.team_points!.total)}})
-  );
+  ).catch(e => {
+    console.log(e);
+    return null;
+  });
+
+  if (!leagueProjections) {
+    return LoadError();
+  }
+
   const tableData = leagueStats.map(team => {
     return (
       <tr key={team.team_id}>
@@ -41,4 +59,8 @@ export default async function Scoreboard() {
       </table>
     </div>
   );
+}
+
+function LoadError() {
+  return <div><h2>Failed to load data</h2></div>
 }

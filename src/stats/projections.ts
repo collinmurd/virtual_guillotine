@@ -53,12 +53,21 @@ function calculateRemainingTeamProjection(games: GameStatus[], players: sleeper.
   }, 0);
 }
 
+// returns a list of SleeperPlayers for a given Team. returns a null entry if the player is on bye
 function getPlayerProjectionsForFantasyTeam(
+  current_week: number,
   fantasyTeam: yahoo.YahooTeam, // team and player response from yahoo
   sleeperPlayers: sleeper.SleeperPlayer[],
-): sleeper.SleeperPlayer[] {
+): (sleeper.SleeperPlayer | null)[] {
   return fantasyTeam.players!.map(yahooPlayer => {
-    return sleeperPlayers.find(sleeperPlayer => matchPlayer(sleeperPlayer, yahooPlayer.player))!
+    if (yahooPlayer.player.bye_weeks.week === current_week.toString()) {
+      return null;
+    }
+    const match = sleeperPlayers.find(sleeperPlayer => matchPlayer(sleeperPlayer, yahooPlayer.player))!;
+    if (!match) {
+      throw new Error(`Failed to match Yahoo & Sleeper player:\n${JSON.stringify(yahooPlayer.player)}`);
+    }
+    return match;
   });
 }
 
@@ -66,8 +75,14 @@ function matchPlayer(sleeperPlayer: sleeper.SleeperPlayer, yahooPlayer: yahoo.Ya
   if (yahooPlayer.primary_position === 'DEF') {
     return yahooPlayer.editorial_team_abbr.toUpperCase() === sleeperPlayer.player_id;
   } else {
+    const suffix = [' II', ' III', ' IV', ' Jr', ' Jr.', ' Sr', ' Sr.'].find(suffix => yahooPlayer.name.full.endsWith(suffix))
+    let yahooName = yahooPlayer.name.full;
+    if (suffix) {
+      yahooName = yahooName.replace(suffix, "").trim();
+    }
+
     return (
-      yahooPlayer.name.full === sleeperPlayer.full_name &&
+      yahooName === sleeperPlayer.full_name &&
       yahooPlayer.uniform_number === sleeperPlayer.number?.toString() &&
       yahooPlayer.editorial_team_abbr.toUpperCase() === sleeperPlayer.team
     );
@@ -91,7 +106,9 @@ export async function getAllLeagueProjections(
       throw new Error("Team not found in Yahoo response");
     }
 
-    const fantasyTeamPlayers = getPlayerProjectionsForFantasyTeam(yahooTeam, allPlayerProjections);
+    // filter out nulls (bye weeks)
+    const fantasyTeamPlayers = getPlayerProjectionsForFantasyTeam(week, yahooTeam, allPlayerProjections)
+      .filter(p => p != null);
 
     const remainingProj = calculateRemainingTeamProjection(games, fantasyTeamPlayers);
     return {
