@@ -20,7 +20,7 @@ export default async function Scoreboard() {
     return LoadError();
   }
 
-  const leagueProjections = await proj.getAllLeagueProjections(
+  let leagueProjections = await proj.getAllLeagueProjections(
     league.current_week,
     leagueStats.map(team => {return {teamId: parseInt(team.team_id), points: parseFloat(team.team_points!.total)}})
   ).catch(e => {
@@ -31,6 +31,10 @@ export default async function Scoreboard() {
   if (!leagueProjections) {
     return LoadError();
   }
+
+  leagueProjections.map(p => {
+    p.points = Math.round((p.points + Number.EPSILON) * 100) / 100
+  })
 
   const tableData = leagueStats.map(team => {
     return (
