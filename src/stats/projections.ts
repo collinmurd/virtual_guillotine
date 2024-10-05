@@ -54,16 +54,23 @@ function calculateRemainingTeamProjection(games: GameStatus[], players: sleeper.
   }, 0);
 }
 
-// returns a list of SleeperPlayers for a given Team. returns a null entry if the player is on bye
-function getPlayerProjectionsForFantasyTeam(
+// returns a list of SleeperPlayers for a given Team. returns a null entry if the player is on bye or isn't starting
+function mapActiveSleeperPlayersForFantasyTeam(
   current_week: number,
   fantasyTeam: yahoo.YahooTeam, // team and player response from yahoo
   sleeperPlayers: sleeper.SleeperPlayer[],
 ): (sleeper.SleeperPlayer | null)[] {
   return fantasyTeam.roster!.players.map(yahooPlayer => {
+    // player on a bye
     if (yahooPlayer.player.bye_weeks.week === current_week.toString()) {
       return null;
     }
+
+    // player not starting
+    if (yahooPlayer.player.selected_position.position === 'BN') {
+      return null;
+    }
+
     const match = sleeperPlayers.find(sleeperPlayer => matchPlayer(sleeperPlayer, yahooPlayer.player))!;
     if (!match) {
       throw new Error(`Failed to match Yahoo & Sleeper player:\n${JSON.stringify(yahooPlayer.player)}`);
@@ -108,7 +115,7 @@ export async function getAllLeagueProjections(
     }
 
     // filter out nulls (bye weeks)
-    const fantasyTeamPlayers = getPlayerProjectionsForFantasyTeam(week, yahooTeam, allPlayerProjections)
+    const fantasyTeamPlayers = mapActiveSleeperPlayersForFantasyTeam(week, yahooTeam, allPlayerProjections)
       .filter(p => p != null);
 
     const remainingProj = calculateRemainingTeamProjection(games, fantasyTeamPlayers);
