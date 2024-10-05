@@ -48,8 +48,7 @@ export default async function Scoreboard() {
 
   return (
     <div>
-      <h2>Week: {league.current_week}</h2>
-        <ScoresTable data={data}/>
+      <ScoresTable data={data}/>
     </div>
   );
 }

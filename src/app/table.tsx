@@ -13,7 +13,7 @@ export interface ScoresTableData {
 type SortableKey = 'score' | 'projectedScore'
 const headerKeyMap = {
   'score': 'Score',
-  'projectedScore': 'Projected Score'
+  'projectedScore': 'Projected'
 }
 type SortStatus = {key: SortableKey, desc: boolean}
 

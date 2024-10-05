@@ -3,6 +3,7 @@ import "./globals.css";
 import { getSession } from "@/session";
 import { logIn, logOut } from "./actions";
 import { cookies } from "next/headers";
+import * as yahoo from "../apis/yahoo";
 
 export const metadata: Metadata = {
   title: "Create Next App",
@@ -16,9 +17,10 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body>
-        <header>
+      <body className="p-3">
+        <header className="flex justify-between mb-5">
           <Account />
+          <Week />
         </header>
         {children}
       </body>
@@ -42,4 +44,12 @@ async function Account() {
       </form>
     );
   }
+}
+
+async function Week() {
+  const league = await yahoo.getLeague();
+
+  return (
+    <div>Week: {league.current_week}</div>
+  )
 }
