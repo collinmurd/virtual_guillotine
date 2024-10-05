@@ -1,5 +1,8 @@
 'use client'
 
+import { IconCaretDownFilled, IconCaretUpFilled } from "@tabler/icons-react";
+import React, { useState } from "react";
+
 export interface ScoresTableData {
   teamId: string,
   manager: string,
@@ -7,8 +10,48 @@ export interface ScoresTableData {
   projectedScore: number
 }
 
+type SortableKey = 'score' | 'projectedScore'
+const headerKeyMap = {
+  'score': 'Score',
+  'projectedScore': 'Projected Score'
+}
+type SortStatus = {key: SortableKey, desc: boolean}
+
 export function ScoresTable(props: {data: ScoresTableData[]}) {
-  const tableContents = props.data.map(row => {
+  const [currentSort, setCurrentSort] = useState<SortStatus>({key: 'score', desc: true})
+
+  function sort(data: ScoresTableData[], key: SortableKey, desc: boolean = true) {
+    data.sort((a, b) => {
+      if (desc) {
+        return b[key] - a[key];
+      } else {
+        return a[key] - b[key];
+      }
+    });
+
+    return data;
+  }
+
+  function handleSortClicked(key: SortableKey) {
+    setCurrentSort({
+      key: key,
+      desc: currentSort.key === key ? !currentSort.desc : true
+    });
+  }
+
+  const headers = Object.entries(headerKeyMap).map(([key, column]) => {
+    return (
+      <TableCell key={key} header>
+        <div className="flex">
+          <button onClick={() => handleSortClicked(key as SortableKey)}>{column}</button>
+          <IconCaretUpFilled className={currentSort.key === key && !currentSort.desc ? '' : 'hidden'}/>
+          <IconCaretDownFilled className={currentSort.key === key && currentSort.desc ? '' : 'hidden'}/>
+        </div>
+      </TableCell>
+    );
+  });
+
+  const tableContents = sort(props.data, currentSort.key, currentSort.desc).map(row => {
     return (
       <tr key={row.teamId}>
         <TableCell header extraClasses="flex flex-row-reverse">{row.manager}</TableCell>
@@ -16,15 +59,14 @@ export function ScoresTable(props: {data: ScoresTableData[]}) {
         <TableCell header={false}>{row.projectedScore}</TableCell>
       </tr>
     )
-  })
+  });
 
   return (
-    <table className="table-auto">
+    <table className="table-fixed">
       <thead>
         <tr>
           <th></th>
-          <TableCell header>Scored</TableCell>
-          <TableCell header>Projected</TableCell>
+          {headers}
         </tr>
       </thead>
       <tbody>
@@ -37,11 +79,11 @@ export function ScoresTable(props: {data: ScoresTableData[]}) {
 function TableCell(props: {children: React.ReactNode, header: boolean, extraClasses?: string}) {
   if (props.header) {
     return (
-      <th className={props.extraClasses + " border border-lime-400 px-3"}>{props.children}</th>
+      <th className={(props.extraClasses || '') + " min-w-24 border border-lime-400 px-3"}>{props.children}</th>
     );
   } else {
     return (
-      <td className={props.extraClasses + " border border-lime-400 px-3"}>{props.children}</td>
+      <td className={(props.extraClasses || '') + " min-w-24 border border-lime-400 px-3"}>{props.children}</td>
     );
   }
 }
