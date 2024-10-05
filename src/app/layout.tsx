@@ -17,12 +17,14 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className="p-3">
-        <header className="flex justify-between mb-5">
-          <Account />
-          <Week />
-        </header>
-        {children}
+      <body>
+        <div className="p-3 max-w-2xl">
+          <header className="flex justify-between mb-5">
+            <Account />
+            <Week />
+          </header>
+          {children}
+        </div>
       </body>
     </html>
   );
