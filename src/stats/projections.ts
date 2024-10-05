@@ -60,7 +60,7 @@ function getPlayerProjectionsForFantasyTeam(
   fantasyTeam: yahoo.YahooTeam, // team and player response from yahoo
   sleeperPlayers: sleeper.SleeperPlayer[],
 ): (sleeper.SleeperPlayer | null)[] {
-  return fantasyTeam.players!.map(yahooPlayer => {
+  return fantasyTeam.roster!.players.map(yahooPlayer => {
     if (yahooPlayer.player.bye_weeks.week === current_week.toString()) {
       return null;
     }

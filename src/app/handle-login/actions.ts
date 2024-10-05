@@ -21,12 +21,16 @@ export async function handleAuth(accessCode: string) {
 
   // TODO handle error
   const data = await getToken.json();
+  let tokenExp = new Date();
+  tokenExp.setSeconds(tokenExp.getSeconds() + data.expires_in),
+
   await setSession(
     cookies(),
-  {
-    accessToken: data.access_token,
-    tokenExp: (new Date()) + data.expires_in,
-    refreshToken: data.refresh_token
-  });
+    {
+      accessToken: data.access_token,
+      tokenExp: tokenExp,
+      refreshToken: data.refresh_token
+    }
+  );
   redirect('/');
 }
