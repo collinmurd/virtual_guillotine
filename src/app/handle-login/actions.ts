@@ -28,7 +28,7 @@ export async function handleAuth(accessCode: string) {
     cookies(),
     {
       accessToken: data.access_token,
-      tokenExp: tokenExp,
+      tokenExp: tokenExp.toString(),
       refreshToken: data.refresh_token
     }
   );

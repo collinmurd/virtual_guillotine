@@ -1,6 +1,7 @@
 'use client'
 
 import { IconCaretDownFilled, IconCaretUpFilled } from "@tabler/icons-react";
+import { useRouter } from "next/navigation";
 import React, { useState } from "react";
 
 export interface ScoresTableData {
@@ -39,7 +40,7 @@ export function ScoresTable(props: {data: ScoresTableData[]}) {
     });
   }
 
-  const headers = Object.entries(headerKeyMap).map(([key, column]) => {
+  const sortHeaders = Object.entries(headerKeyMap).map(([key, column]) => {
     return (
       <TableCell key={key} header>
         <div className="flex">
@@ -57,26 +58,33 @@ export function ScoresTable(props: {data: ScoresTableData[]}) {
         <TableCell header extraClasses="flex flex-row-reverse">{row.manager}</TableCell>
         <TableCell header={false}>{row.score}</TableCell>
         <TableCell header={false}>{row.projectedScore}</TableCell>
+        <TableCell header={false}></TableCell>
       </tr>
     )
   });
 
   return (
-    <table className="table-fixed">
-      <thead>
-        <tr>
-          <th></th>
-          {headers}
-        </tr>
-      </thead>
-      <tbody>
-        {tableContents}
-      </tbody>
-    </table>
+    <div>
+      <div className="flex justify-center">
+        <Refresh />
+      </div>
+      <table className="table-fixed mt-1">
+        <thead>
+          <tr>
+            <th></th>
+            {sortHeaders}
+            <TableCell header>P/IN/YTP</TableCell>
+          </tr>
+        </thead>
+        <tbody>
+          {tableContents}
+        </tbody>
+      </table>
+    </div>
   );
 }
 
-function TableCell(props: {children: React.ReactNode, header: boolean, extraClasses?: string}) {
+function TableCell(props: {children?: React.ReactNode, header: boolean, extraClasses?: string}) {
   if (props.header) {
     return (
       <th className={(props.extraClasses || '') + " min-w-24 border border-lime-400 px-3"}>{props.children}</th>
@@ -86,4 +94,10 @@ function TableCell(props: {children: React.ReactNode, header: boolean, extraClas
       <td className={(props.extraClasses || '') + " min-w-24 border border-lime-400 px-3"}>{props.children}</td>
     );
   }
+}
+
+function Refresh() {
+  const router = useRouter();
+
+  return <button className="underline" onClick={() => router.refresh()}>Refresh</button>
 }

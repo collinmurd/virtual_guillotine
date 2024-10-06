@@ -1,11 +1,10 @@
 import * as yahoo from "@/apis/yahoo";
 import { getSession } from "@/session";
-import { cookies } from "next/headers";
 import * as proj from '../stats/projections';
 import { ScoresTable, ScoresTableData } from "./table";
 
 export default async function Scoreboard() {
-  if (!(await getSession(cookies()))) {
+  if (!(await getSession())) {
     return <></>
   }
 

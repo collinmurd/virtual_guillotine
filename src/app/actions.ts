@@ -5,7 +5,7 @@ import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 
 export async function logIn() {
-  const session = await getSession(cookies());
+  const session = await getSession();
 
   // redirect to request_auth
   if (!session) {
@@ -17,5 +17,5 @@ export async function logIn() {
 }
 
 export async function logOut() {
-  await destroySession(cookies());
+  await destroySession();
 }

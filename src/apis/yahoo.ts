@@ -1,11 +1,10 @@
 import 'server-only';
 
-import { cookies } from "next/headers";
 import { getSession } from '@/session';
 import constants from '@/constants';
 
 async function getAuth() {
-  const session = await getSession(cookies());
+  const session = await getSession();
   return `Bearer ${session?.accessToken}`;
 }
 
