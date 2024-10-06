@@ -97,70 +97,108 @@ const mockTeamsAndPlayers: YahooTeam[] = [
   {
     team_id: "1",
     name: "team1",
-    players: [
-      {
-        player: {
-          player_id: '11',
-          name: {
-            full: 'Joe Burrow',
-            first: 'Joe',
-            last: 'Burrow'
-          },
-          editorial_team_abbr: 'Cin',
-          primary_position: 'QB',
-          uniform_number: "1",
-          by_weeks: [{week: '10'}]
-        }
-      },
-      {
-        player: {
-          player_id: "12",
-          name: {
-            full: 'Some Guy',
-            first: 'Some',
-            last: 'Guy'
-          },
-          editorial_team_abbr: 'Pit',
-          primary_position: 'K',
-          uniform_number: "4",
-          by_weeks: [{week: '11'}]
-        }
-      },
-    ]
+    roster: {
+      players: [
+        {
+          player: {
+            player_id: '11',
+            name: {
+              full: 'Joe Burrow',
+              first: 'Joe',
+              last: 'Burrow'
+            },
+            editorial_team_abbr: 'Cin',
+            primary_position: 'QB',
+            uniform_number: "1",
+            bye_weeks: {week: '10'},
+            selected_position: {
+              position: 'QB',
+              isFlex: 0
+            }
+          }
+        },
+        {
+          player: {
+            player_id: "12",
+            name: {
+              full: 'Some Guy',
+              first: 'Some',
+              last: 'Guy'
+            },
+            editorial_team_abbr: 'Pit',
+            primary_position: 'K',
+            uniform_number: "4",
+            bye_weeks: {week: '11'},
+            selected_position: {
+              position: 'K',
+              isFlex: 0
+            }
+          }
+        },
+      ]
+    }
   },
   {
     team_id: '2',
     name: 'team2',
-    players: [
-      {
-        player: {
-          player_id: '13',
-          name: {
-            full: 'Nick Chubb',
-            first: 'Nick',
-            last: 'Chubb'
-          },
-          editorial_team_abbr: 'Cle',
-          primary_position: 'RB',
-          uniform_number: "2",
-          by_weeks: [{week: '13'}]
-        }
-      },
-      {
-        player: {
-          player_id: '14',
-          name: {
-            full: 'Cincinnati',
-            first: 'Cincinnati',
-            last: null
-          },
-          editorial_team_abbr: 'Cin',
-          primary_position: 'DEF',
-          uniform_number: null,
-          by_weeks: [{week: '8'}]
-        }
-      },
-    ]
+    roster: {
+      players: [
+        {
+          player: {
+            player_id: '13',
+            name: {
+              full: 'Nick Chubb',
+              first: 'Nick',
+              last: 'Chubb'
+            },
+            editorial_team_abbr: 'Cle',
+            primary_position: 'RB',
+            uniform_number: "2",
+            bye_weeks: {week: '13'},
+            selected_position: {
+              position: 'RB',
+              isFlex: 1
+            }
+          }
+        },
+        {
+          player: {
+            player_id: '14',
+            name: {
+              full: 'Cincinnati',
+              first: 'Cincinnati',
+              last: null
+            },
+            editorial_team_abbr: 'Cin',
+            primary_position: 'DEF',
+            uniform_number: null,
+            bye_weeks: {week: '8'},
+            selected_position: {
+              position: 'DEF',
+              isFlex: 0
+            }
+          }
+        },
+        { // bench player
+          player: {
+            player_id: '13',
+            name: {
+              full: 'Cam Akers',
+              first: 'Cam',
+              last: 'Akers'
+            },
+            editorial_team_abbr: 'HOU',
+            primary_position: 'RB',
+            uniform_number: "2",
+            bye_weeks: {week: '9'},
+            selected_position: {
+              position: 'BN',
+              isFlex: 0
+            }
+          }
+        },
+      ]
+    }
   }
 ];
 
