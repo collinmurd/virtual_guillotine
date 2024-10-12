@@ -76,3 +76,23 @@ jobs:
         labels: ${{ steps.image_metadata.outputs.labels }}
         platforms: linux/amd64,linux/arm64
         push: true
+
+  deploy_all:
+    runs-on: ubuntu-latest
+    needs: [build]
+    steps:
+    - name: Configure ssh key
+      env:
+        PRIVATE_KEY: ${{ secrets.GUILLOTINE_PRIVATE_KEY }}
+      run: |
+        echo "$PRIVATE_KEY" > id_rsa_groceries
+        chmod 600 id_rsa_groceries
+    - name: Docker Compose up
+      env:
+        HOST: "149.130.209.48"
+      run: |
+        ssh -i id_rsa_groceries -o "StrictHostKeyChecking no" groceries@$HOST "
+          curl -o docker-compose.yaml https://raw.githubusercontent.com/collinmurd/groceries/main/docker-compose-prod.yaml
+          docker compose pull
+          docker compose up -d
+        "
