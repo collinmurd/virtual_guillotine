@@ -1,10 +1,20 @@
 import * as yahoo from "@/apis/yahoo";
 import { getSession } from "@/session";
 import * as proj from '../stats/projections';
-import { ScoresTable, ScoresTableData } from "./components/table";
-import { Refresh } from "./components/refresh";
+import { ScoresTable, ScoresTableData } from "./table";
+import { Suspense } from "react";
 
-export default async function Scoreboard() {
+export default async function Page() {
+  return (
+    <div>
+      <Suspense fallback={<p>Loading...</p>}>
+        <Scoreboard />
+      </Suspense>
+    </div>
+  )
+}
+
+async function Scoreboard() {
   if (!(await getSession())) {
     return <></>
   }
@@ -48,9 +58,6 @@ export default async function Scoreboard() {
 
   return (
     <div>
-      <div className="flex justify-center">
-        <Refresh />
-      </div>
       <ScoresTable data={data}/>
     </div>
   );
