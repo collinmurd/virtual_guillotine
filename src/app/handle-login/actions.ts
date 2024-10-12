@@ -21,7 +21,7 @@ export async function handleAuth(accessCode: string) {
 
   // TODO handle error
   const data = await getToken.json();
-  let tokenExp = new Date();
+  const tokenExp = new Date();
   tokenExp.setSeconds(tokenExp.getSeconds() + data.expires_in),
 
   await setSession(

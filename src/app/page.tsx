@@ -20,7 +20,7 @@ export default async function Scoreboard() {
     return LoadError();
   }
 
-  let leagueProjections = await proj.getAllLeagueProjections(
+  const leagueProjections = await proj.getAllLeagueProjections(
     league.current_week,
     leagueTeams.map(team => {return {teamId: parseInt(team.team_id), points: parseFloat(team.team_points!.total)}})
   ).catch(e => {

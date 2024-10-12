@@ -28,10 +28,10 @@ export async function getAllPlayerProjections(week: number): Promise<SleeperPlay
     `https://api.sleeper.app/v1/projections/nfl/regular/${constants.SEASON_YEAR}/${week}`
   );
 
-  let data = await resp.json();
+  const data = await resp.json();
 
   return Object.entries(data as {[player_id: string]: any}).map(([player_id, proj]) => {
-    let player = deepCopy(playerMap[player_id]);
+    const player = deepCopy(playerMap[player_id]);
     player.projections = proj
     return player;
   });

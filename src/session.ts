@@ -14,7 +14,6 @@ export interface SessionData {
 const secretKey = base64url.decode(process.env.SESSION_ENCRYPT_KEY!);
 const cookieName = 'virtual-guillotine-session'
 
-// @ts-ignore
 export async function decryptSessionCookie(cookies: RequestCookies | ReadonlyRequestCookies): Promise<SessionData | null> {
   const cookie = cookies.get(cookieName);
   if (!cookie) {
@@ -34,7 +33,7 @@ export async function decryptSessionCookie(cookies: RequestCookies | ReadonlyReq
 
     return sess;
   })
-  .catch(_ => {
+  .catch(() => {
     return null;
   });
 }

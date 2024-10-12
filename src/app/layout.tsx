@@ -2,7 +2,6 @@ import type { Metadata } from "next";
 import "./globals.css";
 import { getSession } from "@/session";
 import { logIn, logOut } from "./actions";
-import { headers } from "next/headers";
 import * as yahoo from "../apis/yahoo";
 
 export const metadata: Metadata = {

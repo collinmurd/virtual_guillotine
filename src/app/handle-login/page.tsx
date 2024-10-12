@@ -5,10 +5,7 @@ import { useEffect } from "react";
 import { handleAuth } from "./actions";
 
 
-export default function HandleLogin(route: {
-  params: { slug: string }
-  searchParams: { [key: string]: string | string[] | undefined }
-}) {
+export default function HandleLogin() {
   const params = useSearchParams();
   useEffect(() => {
     // TODO handle error on redirect from yahoo (or missing code)
