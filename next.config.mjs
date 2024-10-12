@@ -4,7 +4,8 @@ const nextConfig = {
     typedRoutes: true,
   },
   reactStrictMode: false,
-  output: 'standalone'
+  output: 'standalone',
+  basePath: '/guillotine'
 };
 
 export default nextConfig;
