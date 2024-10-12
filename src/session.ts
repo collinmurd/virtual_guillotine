@@ -1,6 +1,6 @@
 
 import { base64url, jwtDecrypt, EncryptJWT } from 'jose';
-import { RequestCookies } from 'next/dist/compiled/@edge-runtime/cookies';
+import { RequestCookies, ResponseCookies } from 'next/dist/compiled/@edge-runtime/cookies';
 import { ReadonlyRequestCookies } from 'next/dist/server/web/spec-extension/adapters/request-cookies';
 import { cookies, headers } from 'next/headers';
 import 'server-only';
@@ -50,7 +50,7 @@ export function getSession(): SessionData | null {
   }
 }
 
-export async function setSession(cookies: RequestCookies | ReadonlyRequestCookies, data: SessionData) {
+export async function setSession(cookies: RequestCookies | ReadonlyRequestCookies | ResponseCookies, data: SessionData) {
   const jwt = await new EncryptJWT({...data})
     .setProtectedHeader({ alg: 'dir', enc: 'A128CBC-HS256' })
     .setIssuedAt()

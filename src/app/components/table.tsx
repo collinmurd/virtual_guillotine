@@ -1,7 +1,6 @@
 'use client'
 
 import { IconCaretDownFilled, IconCaretUpFilled } from "@tabler/icons-react";
-import { useRouter } from "next/navigation";
 import React, { useState } from "react";
 
 export interface ScoresTableData {
@@ -14,7 +13,7 @@ export interface ScoresTableData {
 type SortableKey = 'score' | 'projectedScore'
 const headerKeyMap = {
   'score': 'Score',
-  'projectedScore': 'Projected'
+  'projectedScore': 'Proj'
 }
 type SortStatus = {key: SortableKey, desc: boolean}
 
@@ -65,15 +64,12 @@ export function ScoresTable(props: {data: ScoresTableData[]}) {
 
   return (
     <div>
-      <div className="flex justify-center">
-        <Refresh />
-      </div>
       <table className="table-fixed mt-1">
         <thead>
           <tr>
             <th></th>
             {sortHeaders}
-            <TableCell header>P/IN/YTP</TableCell>
+            <TableCell header>P/YTP</TableCell>
           </tr>
         </thead>
         <tbody>
@@ -94,10 +90,4 @@ function TableCell(props: {children?: React.ReactNode, header: boolean, extraCla
       <td className={(props.extraClasses || '') + " min-w-24 border border-lime-400 px-3"}>{props.children}</td>
     );
   }
-}
-
-function Refresh() {
-  const router = useRouter();
-
-  return <button className="underline" onClick={() => router.refresh()}>Refresh</button>
 }

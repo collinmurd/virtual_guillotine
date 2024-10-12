@@ -1,7 +1,8 @@
 import * as yahoo from "@/apis/yahoo";
 import { getSession } from "@/session";
 import * as proj from '../stats/projections';
-import { ScoresTable, ScoresTableData } from "./table";
+import { ScoresTable, ScoresTableData } from "./components/table";
+import { Refresh } from "./components/refresh";
 
 export default async function Scoreboard() {
   if (!(await getSession())) {
@@ -47,6 +48,9 @@ export default async function Scoreboard() {
 
   return (
     <div>
+      <div className="flex justify-center">
+        <Refresh />
+      </div>
       <ScoresTable data={data}/>
     </div>
   );
