@@ -3,7 +3,8 @@ const nextConfig = {
   experimental: {
     typedRoutes: true,
   },
-  reactStrictMode: false
+  reactStrictMode: false,
+  output: 'standalone'
 };
 
 export default nextConfig;
