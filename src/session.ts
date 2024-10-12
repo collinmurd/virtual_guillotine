@@ -11,7 +11,7 @@ export interface SessionData {
   refreshToken: string,
 }
 
-const secretKey = base64url.decode(process.env.SESSION_ENCRYPT_KEY!);
+const secretKey = base64url.decode(process.env.SESSION_ENCRYPT_KEY || '');
 const cookieName = 'virtual-guillotine-session'
 
 export async function decryptSessionCookie(cookies: RequestCookies | ReadonlyRequestCookies): Promise<SessionData | null> {
