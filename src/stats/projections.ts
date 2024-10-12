@@ -71,9 +71,10 @@ function mapActiveSleeperPlayersForFantasyTeam(
       return null;
     }
 
-    const match = sleeperPlayers.find(sleeperPlayer => matchPlayer(sleeperPlayer, yahooPlayer.player))!;
+    const match = sleeperPlayers.find(sleeperPlayer => matchPlayer(sleeperPlayer, yahooPlayer.player));
     if (!match) {
-      throw new Error(`Failed to match Yahoo & Sleeper player:\n${JSON.stringify(yahooPlayer.player)}`);
+      console.log(`Failed to match Yahoo & Sleeper player:\n${JSON.stringify(yahooPlayer.player)}`);
+      return null;
     }
     return match;
   });

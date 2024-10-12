@@ -31,8 +31,12 @@ export async function getAllPlayerProjections(week: number): Promise<SleeperPlay
   const data = await resp.json();
 
   return Object.entries(data as {[player_id: string]: any}).map(([player_id, proj]) => {
-    const player = deepCopy(playerMap[player_id]);
-    player.projections = proj
-    return player;
-  });
+    if (Object.keys(playerMap).includes(player_id)) {
+      const player = deepCopy(playerMap[player_id]);
+      player.projections = proj
+      return player;
+    } else {
+      return null;
+    }
+  }).filter(player => player != null);
 }
