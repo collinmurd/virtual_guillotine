@@ -85,14 +85,14 @@ jobs:
       env:
         PRIVATE_KEY: ${{ secrets.GUILLOTINE_PRIVATE_KEY }}
       run: |
-        echo "$PRIVATE_KEY" > id_rsa_groceries
-        chmod 600 id_rsa_groceries
+        echo "$PRIVATE_KEY" > id_rsa_guillotine
+        chmod 600 id_rsa_guillotine
     - name: Docker Compose up
       env:
         HOST: "149.130.209.48"
       run: |
-        ssh -i id_rsa_groceries -o "StrictHostKeyChecking no" groceries@$HOST "
-          curl -o docker-compose.yaml https://raw.githubusercontent.com/collinmurd/groceries/main/docker-compose-prod.yaml
+        ssh -i id_rsa_guillotine -o "StrictHostKeyChecking no" guillotine@$HOST "
+          curl -o docker-compose.yaml https://raw.githubusercontent.com/collinmurd/virtual-guillotine/main/docker-compose.yaml
           docker compose pull
           docker compose up -d
         "
