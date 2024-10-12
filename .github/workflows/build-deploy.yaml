@@ -92,7 +92,7 @@ jobs:
         HOST: "149.130.209.48"
       run: |
         ssh -i id_rsa_guillotine -o "StrictHostKeyChecking no" guillotine@$HOST "
-          curl -o docker-compose.yaml https://raw.githubusercontent.com/collinmurd/virtual-guillotine/main/docker_compose.yaml
+          curl -o docker-compose.yaml https://raw.githubusercontent.com/collinmurd/virtual_guillotine/main/docker-compose.yaml
           docker compose pull
           docker compose up -d
         "
