@@ -39,6 +39,10 @@ export async function decryptSessionCookie(cookies: RequestCookies | ReadonlyReq
 }
 
 export function getSession(): SessionData | null {
+  if (!headers().get('session-accessToken')) {
+    return null;
+  }
+
   return {
     accessToken: headers().get('session-accessToken') as string,
     tokenExp: headers().get('session-tokenExp') as string,
