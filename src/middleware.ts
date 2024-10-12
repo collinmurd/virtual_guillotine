@@ -1,4 +1,4 @@
-import { NextRequest } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { decryptSessionCookie, SessionData } from "./session";
 
 export async function middleware(req: NextRequest) {
@@ -8,17 +8,24 @@ export async function middleware(req: NextRequest) {
     session = await refreshYahooToken(session.refreshToken);
   }
 
+  const requestHeaders = new Headers(req.headers);
   if (session) {
     // set session headers for use in the app
-    req.headers.set('session-accessToken', session.accessToken);
-    req.headers.set('session-tokenExp', session.tokenExp);
-    req.headers.set('session-refreshToken', session.refreshToken);
+    requestHeaders.set('session-accessToken', session.accessToken);
+    requestHeaders.set('session-tokenExp', session.tokenExp);
+    requestHeaders.set('session-refreshToken', session.refreshToken);
   } else {
     // delete any 'session' headers passed in the request
-    req.headers.delete('session-accessToken');
-    req.headers.delete('session-tokenExp');
-    req.headers.delete('session-refreshToken');
+    requestHeaders.delete('session-accessToken');
+    requestHeaders.delete('session-tokenExp');
+    requestHeaders.delete('session-refreshToken');
   }
+
+  return NextResponse.next({
+    request: {
+      headers: requestHeaders
+    }
+  })
 }
 
 async function refreshYahooToken(refreshToken: string): Promise<SessionData> {
