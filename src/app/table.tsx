@@ -3,7 +3,7 @@
 import { IconCaretDownFilled, IconCaretUpFilled } from "@tabler/icons-react";
 import { useSearchParams } from "next/navigation";
 import React, { useState } from "react";
-import { usePathnameWithBasepath } from "./hooks";
+import { usePathnameWithBasepath } from "../hooks";
 
 export interface ScoresTableData {
   teamId: string,
