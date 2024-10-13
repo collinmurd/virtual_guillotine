@@ -76,7 +76,7 @@ export function ScoresTable(props: {data: ScoresTableData[]}) {
 
   return (
     <div>
-      <table className="table-fixed mt-1 w-full">
+      <table className="table-fixed mt-1 w-full max-w-lg">
         <thead>
           <tr>
             <th></th>
