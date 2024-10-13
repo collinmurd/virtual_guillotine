@@ -65,10 +65,9 @@ export function ScoresTable(props: {data: ScoresTableData[]}) {
   });
 
   const tableContents = sort(props.data, currentSort.key, currentSort.desc).map(row => {
-    const managerSubstr = row.manager.length >= 20 ? row.manager.substring(0, 17) + '...' : row.manager;
     return (
       <tr key={row.teamId}>
-        <TableCell header={false} extraClasses="text-right">{managerSubstr}</TableCell>
+        <TableCell header={false} extraClasses="text-right whitespace-nowrap overflow-hidden text-ellipsis">{row.manager}</TableCell>
         <TableCell header={false}>{row.score}</TableCell>
         <TableCell header={false}>{row.proj}</TableCell>
       </tr>
@@ -77,7 +76,7 @@ export function ScoresTable(props: {data: ScoresTableData[]}) {
 
   return (
     <div>
-      <table className="table-fixed mt-1">
+      <table className="table-fixed mt-1 w-full">
         <thead>
           <tr>
             <th></th>
@@ -95,11 +94,11 @@ export function ScoresTable(props: {data: ScoresTableData[]}) {
 function TableCell(props: {children?: React.ReactNode, header: boolean, extraClasses?: string}) {
   if (props.header) {
     return (
-      <th className={(props.extraClasses || '') + " min-w-20 border border-collapse border-lime-400 px-1"}>{props.children}</th>
+      <th className={(props.extraClasses || '') + " w-20 border border-collapse border-lime-400 px-1"}>{props.children}</th>
     );
   } else {
     return (
-      <td className={(props.extraClasses || '') + " min-w-20 border border-collapse border-lime-400 px-1"}>{props.children}</td>
+      <td className={(props.extraClasses || '') + " w-20 border border-collapse border-lime-400 px-1"}>{props.children}</td>
     );
   }
 }
