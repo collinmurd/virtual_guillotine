@@ -23,7 +23,7 @@ export function ScoresTable(props: {data: ScoresTableData[]}) {
   const searchParams = useSearchParams();
   const [currentSort, setCurrentSort] = useState<SortStatus>({
     key: (!searchParams.get('sort') || searchParams.get('sort') === 'score') ? 'score' : 'proj',
-    desc: searchParams.get('dir') === 'desc'
+    desc: searchParams.get('dir') ? searchParams.get('dir') === 'desc' : true
   });
   let pathName = usePathnameWithBasepath();
   if (pathName.endsWith('/')) {
