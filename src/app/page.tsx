@@ -3,6 +3,7 @@ import { getSession } from "@/session";
 import * as proj from '../stats/projections';
 import { ScoresTable, ScoresTableData } from "./table";
 import { Suspense } from "react";
+import LoadError from "@/shared-components/load-error";
 
 export default async function Page() {
   return (
@@ -61,8 +62,4 @@ async function Scoreboard() {
       <ScoresTable data={data}/>
     </div>
   );
-}
-
-function LoadError() {
-  return <div><h2>Failed to load data</h2></div>
 }
