@@ -65,9 +65,10 @@ export function ScoresTable(props: {data: ScoresTableData[]}) {
   });
 
   const tableContents = sort(props.data, currentSort.key, currentSort.desc).map(row => {
+    const managerSubstr = row.manager.length > 15 ? row.manager.substring(0, 15) : row.manager;
     return (
       <tr key={row.teamId}>
-        <TableCell header extraClasses="flex flex-row-reverse">{row.manager}</TableCell>
+        <TableCell header extraClasses="flex flex-row-reverse">{managerSubstr}</TableCell>
         <TableCell header={false}>{row.score}</TableCell>
         <TableCell header={false}>{row.proj}</TableCell>
         <TableCell header={false}></TableCell>
