@@ -1,24 +1,34 @@
 'use client'
 
 import { IconCaretDownFilled, IconCaretUpFilled } from "@tabler/icons-react";
+import { useSearchParams } from "next/navigation";
 import React, { useState } from "react";
+import { usePathnameWithBasepath } from "./hooks";
 
 export interface ScoresTableData {
   teamId: string,
   manager: string,
   score: number,
-  projectedScore: number
+  proj: number
 }
 
-type SortableKey = 'score' | 'projectedScore'
+type SortableKey = 'score' | 'proj'
 const headerKeyMap = {
   'score': 'Score',
-  'projectedScore': 'Proj'
+  'proj': 'Proj'
 }
 type SortStatus = {key: SortableKey, desc: boolean}
 
 export function ScoresTable(props: {data: ScoresTableData[]}) {
-  const [currentSort, setCurrentSort] = useState<SortStatus>({key: 'score', desc: true})
+  const searchParams = useSearchParams();
+  const [currentSort, setCurrentSort] = useState<SortStatus>({
+    key: (!searchParams.get('sort') || searchParams.get('sort') === 'score') ? 'score' : 'proj',
+    desc: searchParams.get('dir') === 'desc'
+  });
+  let pathName = usePathnameWithBasepath();
+  if (pathName.endsWith('/')) {
+    pathName = pathName.substring(0, pathName.length - 1);
+  }
 
   function sort(data: ScoresTableData[], key: SortableKey, desc: boolean = true) {
     data.sort((a, b) => {
@@ -33,9 +43,12 @@ export function ScoresTable(props: {data: ScoresTableData[]}) {
   }
 
   function handleSortClicked(key: SortableKey) {
+    const desc = currentSort.key === key ? !currentSort.desc : true;
+    const url = `${pathName}?sort=${key}&dir=${desc ? 'desc' : 'asc'}`;
+    window.history.replaceState({ ...window.history.state, as: url, url: url }, '', url);
     setCurrentSort({
       key: key,
-      desc: currentSort.key === key ? !currentSort.desc : true
+      desc: desc
     });
   }
 
@@ -56,7 +69,7 @@ export function ScoresTable(props: {data: ScoresTableData[]}) {
       <tr key={row.teamId}>
         <TableCell header extraClasses="flex flex-row-reverse">{row.manager}</TableCell>
         <TableCell header={false}>{row.score}</TableCell>
-        <TableCell header={false}>{row.projectedScore}</TableCell>
+        <TableCell header={false}>{row.proj}</TableCell>
         <TableCell header={false}></TableCell>
       </tr>
     )

@@ -52,7 +52,7 @@ async function Scoreboard() {
       teamId: team.team_id,
       manager: team.name,
       score: parseFloat(team.team_points?.total!),
-      projectedScore: leagueProjections.find(t => t.teamId.toString() === team.team_id)!.points
+      proj: leagueProjections.find(t => t.teamId.toString() === team.team_id)!.points
     }
   })
 
