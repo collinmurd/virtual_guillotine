@@ -4,6 +4,7 @@ import { getSession } from "@/session";
 import { logIn, logOut } from "./actions";
 import * as yahoo from "../apis/yahoo";
 import { Source_Code_Pro } from "next/font/google";
+import Link from "next/link";
 
 export const metadata: Metadata = {
   title: "Virtual Guillotine",
@@ -36,9 +37,15 @@ async function Header() {
   const session = await getSession();
 
   return (
-    <header className="flex justify-between mb-5">
-      <Account loggedIn={session != null} />
-      {session != null && <Week /> }
+    <header className="mb-5">
+      <div className="flex justify-between">
+        <Account loggedIn={session != null} />
+        {session != null && <Week /> }
+      </div>
+      <nav className="flex justify-center">
+        <Link href="/" className="mx-2 underline">Scores</Link>
+        <Link href="/team" className="mx-2 underline">Team</Link>
+      </nav>
     </header>
   )
 }
