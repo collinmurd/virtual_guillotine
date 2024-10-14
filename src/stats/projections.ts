@@ -23,6 +23,21 @@ async function getGameStatuses(): Promise<GameStatus[]> {
   });
 }
 
+function calculateCurrentPlayerScore(player: yahoo.YahooPlayer): number {
+  if (!player.player_stats) {
+    throw new Error(`Yahoo didn't return stats for player: ${player.player_id}`);
+  }
+
+  return player.player_stats.stats.reduce((accumulator, stat)=> {
+    const mapped = stats[stat.stat.stat_id];
+    if (mapped) {
+      return accumulator + (stat.stat.value * mapped.weight)
+    } else {
+      return accumulator;
+    }
+  }, 0);
+}
+
 function calculateRemainingPlayerProjection(game: GameStatus | null, playerProjections: {[stat: string]: number}): number {
   // ignoring OT possibilities for now
   let gameProgressRemaining = 1;
@@ -71,13 +86,20 @@ function mapActiveSleeperPlayersForFantasyTeam(
       return null;
     }
 
-    const match = sleeperPlayers.find(sleeperPlayer => matchPlayer(sleeperPlayer, yahooPlayer.player));
+    return mapSleeperPlayer(yahooPlayer.player, sleeperPlayers);
+  });
+}
+
+function mapSleeperPlayer(
+  yahooPlayer: yahoo.YahooPlayer,
+  sleeperPlayers: sleeper.SleeperPlayer[]
+): sleeper.SleeperPlayer | null {
+  const match = sleeperPlayers.find(sleeperPlayer => matchPlayer(sleeperPlayer, yahooPlayer));
     if (!match) {
-      console.log(`Failed to match Yahoo & Sleeper player:\n${JSON.stringify(yahooPlayer.player)}`);
+      console.log(`Failed to match Yahoo & Sleeper player:\n${JSON.stringify(yahooPlayer)}`);
       return null;
     }
     return match;
-  });
 }
 
 function matchPlayer(sleeperPlayer: sleeper.SleeperPlayer, yahooPlayer: yahoo.YahooPlayer): boolean {
@@ -107,7 +129,7 @@ export async function getAllLeagueProjections(
 }[]> {
   const games = await getGameStatuses();
   const allPlayerProjections = await sleeper.getAllPlayerProjections(week);
-  const fantasyTeamsAndPlayers = await yahoo.getTeamsWithPlayers();
+  const fantasyTeamsAndPlayers = await yahoo.getTeamsWithRoster();
 
   return currentScores.map(team => {
     const yahooTeam = fantasyTeamsAndPlayers.find(t => t.team_id === team.teamId.toString());
@@ -123,6 +145,31 @@ export async function getAllLeagueProjections(
     return {
       teamId: team.teamId,
       points: team.points + remainingProj
+    }
+  });
+}
+
+export async function getTeamProjections(week: number, teamId: number): Promise<{
+  player: sleeper.SleeperPlayer | null,
+  currentScore: number,
+  projectedScore: number
+}[]> {
+  const games = await getGameStatuses();
+  const allPlayerProjections = await sleeper.getAllPlayerProjections(week);
+  const yahooTeam = await yahoo.getTeamWithPlayersAndStats(teamId, week.toString());
+
+  return yahooTeam.players!.map(p => {
+    const sleeperPlayer = mapSleeperPlayer(p.player, allPlayerProjections);
+    if (!sleeperPlayer) {
+      return {player: null, currentScore: 0, projectedScore: 0}
+    }
+
+    const game = games.find(g => g.name.includes(sleeperPlayer.team!)) || null;
+
+    return {
+      player: sleeperPlayer,
+      currentScore: calculateCurrentPlayerScore(p.player),
+      projectedScore: calculateRemainingPlayerProjection(game, sleeperPlayer.projections!)
     }
   });
 }

@@ -1,6 +1,7 @@
 import * as yahoo from "@/apis/yahoo"
 import { getSession } from "@/session";
 import LoadError from "@/shared-components/load-error";
+import { getTeamProjections } from "@/stats/projections";
 
 const positions = [
   "QB",
@@ -14,16 +15,35 @@ const positions = [
   "DEF",
 ]
 
-export default async function Page() {
+export default async function Page({
+  params,
+  searchParams,
+}: {
+  params: { slug: string }
+  searchParams: { [key: string]: string | string[] | undefined }
+}) {
   if (!(await getSession())) {
     return <></>
   }
 
-  const teams = await yahoo.getTeamsWithPlayers();
+  let teamId = searchParams['team'];
+  if (!teamId || typeof teamId != "number") {
+    teamId = "1"; // kind of hacky, default to the team with id 1
+  }
 
-  if (!teams) {
+  const [teams, league] = await Promise.all([
+    yahoo.getTeamsWithRoster(),
+    yahoo.getLeague()
+  ]).catch(e => {
+    console.log(e);
+    return [null, null];
+  });
+
+  if (!teams || !league) {
     return LoadError();
   }
+
+  const playerScores = await getTeamProjections(league.current_week, parseInt(teamId));
 
   const teamSelectData = teams.map(t => {
     return {
@@ -61,7 +81,7 @@ function Lineup() {
     <tr key={p + i}>
       <th scope="row">{p}</th>
       <td>Player Name</td>
-      <td>10.43</td>
+      <td><p>10.43</p><p className="text-xs">12.3</p></td>
     </tr>
   )
   return (
