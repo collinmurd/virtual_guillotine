@@ -57,7 +57,11 @@ async function Content(props: {teamId: string}) {
   const playerScores = await getTeamProjections(league.current_week, props.teamId);
   // fill in "roster" player data with "stats" player data... thanks yahoo
   playerScores.forEach(ps => {
-    ps.player!.selected_position = team?.roster?.players!.find(p => p.player.player_id === ps.player?.player_id)?.player.selected_position;
+    if (ps.player) {
+      ps.player!.selected_position = team?.roster?.players!.find(p =>
+        p.player.player_id === ps.player?.player_id
+      )?.player.selected_position;
+    }
   });
 
   const teamSelectData = teams.map(t => {
@@ -89,7 +93,7 @@ function Lineup(props: {data: LineupData[]}) {
       p.player?.selected_position?.position === pos && !selectedPlayers.includes(p.player.player_id)
     );
     selectedPlayers.push(player?.player?.player_id!);
-    const name = player ? player?.player?.name.full : "Empty";
+    const name = player ? player?.player?.name.full : "Hingle McCringleberry";
     const score = player ? player.currentScore : 0;
     const proj = player ? player.projectedScore : 0;
     return (
