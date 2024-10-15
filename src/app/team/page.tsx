@@ -2,6 +2,7 @@ import * as yahoo from "@/apis/yahoo"
 import { getSession } from "@/session";
 import LoadError from "@/shared-components/load-error";
 import { getTeamProjections } from "@/stats/projections";
+import { TeamSelect } from "./team-select";
 
 const positions = [
   "QB",
@@ -64,20 +65,6 @@ export default async function Page({
       </div>
       <Lineup data={playerScores}/>
     </div>
-  )
-}
-
-function TeamSelect(props: {teams: {name: string, id: string}[]}) {
-  const options = props.teams.map(t => {
-    return <option key={t.id} value={t.id} className="text-black">{t.name}</option>
-  });
-
-  return (
-    <form>
-      <select className="bg-transparent border border-white">
-        {options}
-      </select>
-    </form>
   )
 }
 
