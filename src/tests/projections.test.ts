@@ -1,5 +1,5 @@
 import { getNFLScoreboard } from "@/apis/espn";
-import { getTeamsWithPlayers, YahooTeam } from "@/apis/yahoo";
+import { getTeamsWithRoster, YahooTeam } from "@/apis/yahoo";
 import { getAllLeagueProjections } from "@/stats/projections";
 import { getAllPlayerProjections, SleeperPlayer } from "@/apis/sleeper";
 import playerMap from '../apis/sleeperPlayerMap';
@@ -217,7 +217,7 @@ describe('calculateTeamProjections', () => {
   beforeEach(() => {
     (getNFLScoreboard as jest.Mock).mockReturnValue(mockGames);
     (getAllPlayerProjections as jest.Mock).mockReturnValue(mockPlayerProjections);
-    (getTeamsWithPlayers as jest.Mock).mockReturnValue(mockTeamsAndPlayers);
+    (getTeamsWithRoster as jest.Mock).mockReturnValue(mockTeamsAndPlayers);
   });
 
   it('should return a list with current projections', async () => {
