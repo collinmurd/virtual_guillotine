@@ -61,7 +61,7 @@ function calculateRemainingPlayerProjection(game: GameStatus | null, playerProje
 function calculateRemainingTeamProjection(games: GameStatus[], players: sleeper.SleeperPlayer[]): number {
   return players.reduce((accumulator, player) => {
     if (player.team) {
-      const game = games.find(g => g.name.includes(player.team!)) || null;
+      const game = games.find(g => g.name.includes(getESPNTeam(player.team!))) || null;
       return accumulator + calculateRemainingPlayerProjection(game, player.projections!);
     } else {
       return accumulator;
