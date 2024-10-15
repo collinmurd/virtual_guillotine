@@ -44,7 +44,7 @@ export async function getTeamsWithRoster(): Promise<YahooTeam[]> {
   return (await resp.json()).fantasy_content.league.teams.map((t: any) => t.team);
 }
 
-export async function getTeamWithPlayersAndStats(teamId: number, week: string = "current"): Promise<YahooTeam> {
+export async function getTeamWithPlayersAndStats(teamId: string, week: string = "current"): Promise<YahooTeam> {
   const resp = await fetch(
     `https://fantasysports.yahooapis.com/fantasy/v2/team/nfl.l.${constants.YAHOO_LEAGUE_ID}.t.${teamId}/players/stats;type=week;week=${week}?format=json_f`, {
       headers: {

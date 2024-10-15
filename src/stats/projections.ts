@@ -158,7 +158,7 @@ export async function getAllLeagueProjections(
   });
 }
 
-export async function getTeamProjections(week: number, teamId: number): Promise<{
+export async function getTeamProjections(week: number, teamId: string): Promise<{
   player: yahoo.YahooPlayer | null,
   currentScore: number,
   projectedScore: number

@@ -27,8 +27,8 @@ export default async function Page({
     return <></>
   }
 
-  let teamId = searchParams['team'];
-  if (!teamId || typeof teamId != "number") {
+  let teamId = searchParams.team;
+  if (!teamId || typeof teamId === 'object' || isNaN(teamId as any)) {
     teamId = "1"; // kind of hacky, default to the team with id 1
   }
 
@@ -45,7 +45,7 @@ export default async function Page({
   }
 
   const team = teams.find(t => t.team_id === teamId);
-  const playerScores = await getTeamProjections(league.current_week, parseInt(teamId));
+  const playerScores = await getTeamProjections(league.current_week, teamId);
   // fill in "roster" player data with "stats" player data... thanks yahoo
   playerScores.forEach(ps => {
     ps.player!.selected_position = team?.roster?.players!.find(p => p.player.player_id === ps.player?.player_id)?.player.selected_position;
@@ -61,7 +61,7 @@ export default async function Page({
   return (
     <div>
       <div className="flex justify-center">
-        <TeamSelect teams={teamSelectData}/>
+        <TeamSelect teams={teamSelectData} defaultId={teamId}/>
       </div>
       <Lineup data={playerScores}/>
     </div>
