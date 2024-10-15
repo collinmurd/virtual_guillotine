@@ -29,7 +29,7 @@ function calculateCurrentPlayerScore(player: yahoo.YahooPlayer): number {
   }
 
   return player.player_stats.stats.reduce((accumulator, stat)=> {
-    const mapped = stats[stat.stat.stat_id];
+    const mapped = Object.values(stats).find(s => s.yahoo_id.toString() === stat.stat.stat_id)
     if (mapped) {
       return accumulator + (stat.stat.value * mapped.weight)
     } else {
@@ -82,7 +82,7 @@ function mapActiveSleeperPlayersForFantasyTeam(
     }
 
     // player not starting
-    if (yahooPlayer.player.selected_position.position === 'BN') {
+    if (yahooPlayer.player.selected_position!.position === 'BN') {
       return null;
     }
 
@@ -120,6 +120,15 @@ function matchPlayer(sleeperPlayer: sleeper.SleeperPlayer, yahooPlayer: yahoo.Ya
   }
 }
 
+// map Yahoo team abbreviations to ESPN team abbreviations
+function getESPNTeam(sleeperTeamAbbr: string) {
+  if (sleeperTeamAbbr.toUpperCase() === 'WAS') {
+    return 'WSH'
+  }
+
+  return sleeperTeamAbbr.toUpperCase();
+}
+
 export async function getAllLeagueProjections(
   week: number,
   currentScores: {teamId: number, points: number}[]
@@ -150,7 +159,7 @@ export async function getAllLeagueProjections(
 }
 
 export async function getTeamProjections(week: number, teamId: number): Promise<{
-  player: sleeper.SleeperPlayer | null,
+  player: yahoo.YahooPlayer | null,
   currentScore: number,
   projectedScore: number
 }[]> {
@@ -164,12 +173,17 @@ export async function getTeamProjections(week: number, teamId: number): Promise<
       return {player: null, currentScore: 0, projectedScore: 0}
     }
 
-    const game = games.find(g => g.name.includes(sleeperPlayer.team!)) || null;
+    const game = games.find(g => g.name.includes(getESPNTeam(sleeperPlayer.team!))) || null;
 
+    const currentScore = calculateCurrentPlayerScore(p.player);
     return {
-      player: sleeperPlayer,
-      currentScore: calculateCurrentPlayerScore(p.player),
-      projectedScore: calculateRemainingPlayerProjection(game, sleeperPlayer.projections!)
+      player: p.player,
+      currentScore: round(currentScore),
+      projectedScore: round(currentScore + calculateRemainingPlayerProjection(game, sleeperPlayer.projections!))
     }
   });
+}
+
+function round(num: number): number {
+  return Math.round((num + Number.EPSILON) * 100) / 100;
 }

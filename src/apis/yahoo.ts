@@ -99,7 +99,7 @@ export interface YahooPlayer {
   bye_weeks: { week: string },
   uniform_number: string | null,
   primary_position: string,
-  selected_position: {
+  selected_position?: {
     position: string,
     isFlex: 1 | 0
   },

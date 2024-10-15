@@ -43,7 +43,12 @@ export default async function Page({
     return LoadError();
   }
 
+  const team = teams.find(t => t.team_id === teamId);
   const playerScores = await getTeamProjections(league.current_week, parseInt(teamId));
+  // fill in "roster" player data with "stats" player data... thanks yahoo
+  playerScores.forEach(ps => {
+    ps.player!.selected_position = team?.roster?.players!.find(p => p.player.player_id === ps.player?.player_id)?.player.selected_position;
+  });
 
   const teamSelectData = teams.map(t => {
     return {
@@ -57,7 +62,7 @@ export default async function Page({
       <div className="flex justify-center">
         <TeamSelect teams={teamSelectData}/>
       </div>
-      <Lineup />
+      <Lineup data={playerScores}/>
     </div>
   )
 }
@@ -76,14 +81,29 @@ function TeamSelect(props: {teams: {name: string, id: string}[]}) {
   )
 }
 
-function Lineup() {
-  const rows = positions.map((p, i) =>
-    <tr key={p + i}>
-      <th scope="row">{p}</th>
-      <td>Player Name</td>
-      <td><p>10.43</p><p className="text-xs">12.3</p></td>
-    </tr>
-  )
+interface LineupData {
+  player: yahoo.YahooPlayer | null,
+  currentScore: number,
+  projectedScore: number
+}
+function Lineup(props: {data: LineupData[]}) {
+  const selectedPlayers: string[] = [];
+  const rows = positions.map((pos, i) => {
+    const player = props.data.find(p => 
+      p.player?.selected_position?.position === pos && !selectedPlayers.includes(p.player.player_id)
+    );
+    selectedPlayers.push(player?.player?.player_id!);
+    const name = player ? player?.player?.name.full : "Empty";
+    const score = player ? player.currentScore : 0;
+    const proj = player ? player.projectedScore : 0;
+    return (
+      <tr key={pos + i}>
+        <th scope="row">{pos}</th>
+        <td>{name}</td>
+        <td><p>{score}</p><p className="text-xs">{proj}</p></td>
+      </tr>
+    );
+  })
   return (
     <table>
       <tbody>
