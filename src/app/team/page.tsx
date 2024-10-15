@@ -3,6 +3,7 @@ import { getSession } from "@/session";
 import LoadError from "@/shared-components/load-error";
 import { getTeamProjections } from "@/stats/projections";
 import { TeamSelect } from "./team-select";
+import { Suspense } from "react";
 
 const positions = [
   "QB",
@@ -32,6 +33,14 @@ export default async function Page({
     teamId = "1"; // kind of hacky, default to the team with id 1
   }
 
+  return (
+    <Suspense key={teamId} fallback={<p>Loading...</p>}>
+      <Content teamId={teamId} />
+    </Suspense>
+  )
+}
+
+async function Content(props: {teamId: string}) {
   const [teams, league] = await Promise.all([
     yahoo.getTeamsWithRoster(),
     yahoo.getLeague()
@@ -44,8 +53,8 @@ export default async function Page({
     return LoadError();
   }
 
-  const team = teams.find(t => t.team_id === teamId);
-  const playerScores = await getTeamProjections(league.current_week, teamId);
+  const team = teams.find(t => t.team_id === props.teamId);
+  const playerScores = await getTeamProjections(league.current_week, props.teamId);
   // fill in "roster" player data with "stats" player data... thanks yahoo
   playerScores.forEach(ps => {
     ps.player!.selected_position = team?.roster?.players!.find(p => p.player.player_id === ps.player?.player_id)?.player.selected_position;
@@ -61,7 +70,7 @@ export default async function Page({
   return (
     <div>
       <div className="flex justify-center">
-        <TeamSelect teams={teamSelectData} defaultId={teamId}/>
+        <TeamSelect teams={teamSelectData} defaultId={props.teamId}/>
       </div>
       <Lineup data={playerScores}/>
     </div>
