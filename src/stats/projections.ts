@@ -184,6 +184,6 @@ export async function getTeamProjections(week: number, teamId: string): Promise<
   });
 }
 
-function round(num: number): number {
+export function round(num: number): number {
   return Math.round((num + Number.EPSILON) * 100) / 100;
 }

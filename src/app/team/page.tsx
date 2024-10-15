@@ -1,7 +1,7 @@
 import * as yahoo from "@/apis/yahoo"
 import { getSession } from "@/session";
 import LoadError from "@/shared-components/load-error";
-import { getTeamProjections } from "@/stats/projections";
+import { getTeamProjections, round } from "@/stats/projections";
 import { TeamSelect } from "./team-select";
 import { Suspense } from "react";
 
@@ -74,9 +74,11 @@ async function Content(props: {teamId: string}) {
   return (
     <div>
       <div className="flex justify-center">
-        <TeamSelect teams={teamSelectData} defaultId={props.teamId}/>
+        <div>
+          <TeamSelect teams={teamSelectData} defaultId={props.teamId}/>
+          <Lineup data={playerScores}/>
+        </div>
       </div>
-      <Lineup data={playerScores}/>
     </div>
   )
 }
@@ -87,9 +89,11 @@ interface LineupData {
   projectedScore: number
 }
 function Lineup(props: {data: LineupData[]}) {
+
+  const playersInPlay = props.data.filter(p => p.player?.selected_position?.position !== 'BN');
   const selectedPlayers: string[] = [];
   const rows = positions.map((pos, i) => {
-    const player = props.data.find(p => 
+    const player = playersInPlay.find(p => 
       p.player?.selected_position?.position === pos && !selectedPlayers.includes(p.player.player_id)
     );
     selectedPlayers.push(player?.player?.player_id!);
@@ -98,17 +102,33 @@ function Lineup(props: {data: LineupData[]}) {
     const proj = player ? player.projectedScore : 0;
     return (
       <tr key={pos + i}>
-        <th scope="row">{pos}</th>
-        <td>{name}</td>
-        <td><p>{score}</p><p className="text-xs">{proj}</p></td>
+        <th className="pr-3" scope="row">{pos}</th>
+        <td className="px-2 border border-collapse border-lime-400">{name}</td>
+        <td className="px-2 border border-collapse border-lime-400 text-right">
+          <p>{score}</p>
+          <p className="text-xs text-gray-400">{proj}</p>
+        </td>
       </tr>
     );
-  })
+  });
+
   return (
-    <table>
+    <table className="mt-3">
       <tbody>
         {rows}
+        <tr>
+          <td></td>
+          <td></td>
+          <td className="px-2 border border-collapse border-lime-400 text-right">
+            <p>{sumPoints(playersInPlay, 'currentScore')}</p>
+            <p className="text-xs text-gray-400">{sumPoints(playersInPlay, 'projectedScore')}</p>
+          </td>
+        </tr>
       </tbody>
     </table>
   )
+}
+
+function sumPoints(data: LineupData[], key: 'currentScore' | 'projectedScore') {
+  return round(data.reduce((accumulator, player) => accumulator + player[key], 0));
 }
