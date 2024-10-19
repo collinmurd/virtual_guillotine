@@ -21,4 +21,5 @@ export async function logIn() {
 
 export async function logOut() {
   await destroySession();
+  redirect('/')
 }
