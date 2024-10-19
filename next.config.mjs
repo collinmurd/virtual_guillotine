@@ -11,7 +11,17 @@ const nextConfig = {
   },
   reactStrictMode: false,
   output: 'standalone',
-  basePath: '/guillotine'
+  basePath: '/guillotine',
+  async redirects() {
+    return [
+      {
+        source: '/',
+        destination: '/guillotine',
+        basePath: false,
+        permanent: false
+      }
+    ]
+  }
 };
 
 export default nextConfig;
