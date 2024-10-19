@@ -5,6 +5,7 @@ import { logIn, logOut } from "./actions";
 import * as yahoo from "../apis/yahoo";
 import { Source_Code_Pro } from "next/font/google";
 import Link from "next/link";
+import { LoginButton } from "./login-button";
 
 export const metadata: Metadata = {
   title: "Virtual Guillotine",
@@ -59,9 +60,7 @@ async function Account(props: {loggedIn: boolean}) {
     )
   } else {
     return (
-      <form action={logIn}>
-        <button type="submit">Log In</button>
-      </form>
+      <LoginButton />
     );
   }
 }
