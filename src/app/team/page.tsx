@@ -102,12 +102,12 @@ function Lineup(props: {data: LineupData[]}) {
     const proj = player ? player.projectedScore : 0;
     return (
       <tr key={pos + i}>
-        <th className="pr-3" scope="row">{pos}</th>
         <td className="px-2 border border-collapse border-lime-400">{name}</td>
         <td className="px-2 border border-collapse border-lime-400 text-right">
           <p>{score}</p>
           <p className="text-xs text-gray-400">{proj}</p>
         </td>
+        <th className="pl-3" scope="row">{pos}</th>
       </tr>
     );
   });
@@ -118,11 +118,11 @@ function Lineup(props: {data: LineupData[]}) {
         {rows}
         <tr>
           <td></td>
-          <td></td>
           <td className="px-2 border border-collapse border-lime-400 text-right">
             <p>{sumPoints(playersInPlay, 'currentScore')}</p>
             <p className="text-xs text-gray-400">{sumPoints(playersInPlay, 'projectedScore')}</p>
           </td>
+          <td></td>
         </tr>
       </tbody>
     </table>
