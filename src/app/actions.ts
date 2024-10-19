@@ -12,7 +12,7 @@ export async function logIn() {
     const client_id = process.env.CLIENT_ID!;
     let redirect_uri = `${headers().get('Origin')}/guillotine/handle-login`;
     if (process.env.CODESPACE_NAME) {
-      redirect_uri = `${process.env.CODESPACE_NAME}/guillotine/handle-login`;
+      redirect_uri = `https://${process.env.CODESPACE_NAME}-3000.app.github.dev/guillotine/handle-login`;
     }
     const response_type = 'code';
     redirect(`https://api.login.yahoo.com/oauth2/request_auth?client_id=${client_id}&redirect_uri=${redirect_uri}&response_type=${response_type}`)
