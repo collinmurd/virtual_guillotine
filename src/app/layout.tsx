@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import { getSession } from "@/session";
-import { logIn, logOut } from "./actions";
+import { logOut } from "./actions";
 import * as yahoo from "../apis/yahoo";
 import { Source_Code_Pro } from "next/font/google";
 import Link from "next/link";
