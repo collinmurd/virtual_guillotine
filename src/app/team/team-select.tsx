@@ -2,7 +2,13 @@
 
 import { useRouter } from "next/navigation";
 
-export function TeamSelect(props: {teams: {name: string, id: string}[], defaultId: string | null}) {
+interface TeamSelectProps {
+  teams: {name: string, id: string}[],
+  defaultId: string | null,
+  compare?: boolean,
+  defaultCompareId?: string,
+}
+export function TeamSelect(props: TeamSelectProps) {
   const router = useRouter();
 
   const options = props.teams.map(t => {
@@ -11,13 +17,32 @@ export function TeamSelect(props: {teams: {name: string, id: string}[], defaultI
 
   return (
     <form>
-      <select
-        defaultValue={props.defaultId || '1'}
-        onChange={(e) => router.replace(`/team?team=${e.target.value}`)}
-        className="bg-transparent border border-white"
-      >
-        {options}
-      </select>
+      <div className="flex">
+        <select
+          defaultValue={props.defaultId || '1'}
+          onChange={(e) => router.replace(queryString(e.target.value))}
+          className="bg-transparent border border-white"
+        >
+          {options}
+        </select>
+        {props.compare && 
+          <select
+            defaultValue={props.defaultCompareId || '1'}
+            onChange={(e) => router.replace(queryString(props.defaultId || '1', e.target.value))}
+            className="bg-transparent border border-white"
+          >
+            {options}
+          </select>
+        }
+      </div>
     </form>
   );
+}
+
+function queryString(teamId: string, compareTeamId?: string) {
+  if (compareTeamId) {
+    return `?team=${teamId}&compare=${compareTeamId}`;
+  }
+
+  return `?team=${teamId}`;
 }
