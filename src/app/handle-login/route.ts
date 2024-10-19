@@ -1,11 +1,11 @@
-'use server';
-
 import { setSession } from "@/session";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
+import { NextRequest } from "next/server";
 
-export async function handleAuth(accessCode: string) {
-  // handle redirect from Yahoo and set session with access token
+export const dynamic = 'force-dynamic'
+export async function GET(req: NextRequest) {
+  const accessCode = req.nextUrl.searchParams.get('code') as string;
   const getToken = await fetch('https://api.login.yahoo.com/oauth2/get_token', {
     method: 'POST',
     headers: {
@@ -32,5 +32,5 @@ export async function handleAuth(accessCode: string) {
       refreshToken: data.refresh_token
     }
   );
-  redirect('/');
+  redirect('/guillotine');
 }
