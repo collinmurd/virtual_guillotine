@@ -1,22 +1,11 @@
 import * as yahoo from "@/apis/yahoo"
 import { getSession } from "@/session";
 import LoadError from "@/shared-components/load-error";
-import { getTeamProjections, round } from "@/stats/projections";
+import { getTeamProjections } from "@/stats/projections";
 import { TeamSelect } from "./team-select";
 import { Suspense } from "react";
 import Link from "next/link";
-
-const positions = [
-  "QB",
-  "WR",
-  "WR",
-  "RB",
-  "RB",
-  "TE",
-  "W/R/T",
-  "K",
-  "DEF",
-]
+import { Lineup } from "./lineup-table";
 
 export default async function Page({
   params,
@@ -96,7 +85,7 @@ async function Content(props: {teamId: string, compareTeamId?: string}) {
     <div>
       <div className="flex">
         <div>
-          <div className="flex flex-col items-center">
+          <div className="flex flex-col items-center w-full">
             {!comparePlayerScores ? 
               <TeamSelect teams={teamSelectData} defaultId={props.teamId} /> :
               <TeamSelect teams={teamSelectData} defaultId={props.teamId} compare defaultCompareId={props.compareTeamId} />
@@ -124,54 +113,3 @@ async function Content(props: {teamId: string, compareTeamId?: string}) {
   )
 }
 
-interface LineupData {
-  player: yahoo.YahooPlayer | null,
-  currentScore: number,
-  projectedScore: number
-}
-function Lineup(props: {data: LineupData[], displayPosLabels: boolean, invert: boolean}) {
-
-  const playersInPlay = props.data.filter(p => p.player?.selected_position?.position !== 'BN');
-  const selectedPlayers: string[] = [];
-  const rows = positions.map((pos, i) => {
-    const player = playersInPlay.find(p => 
-      p.player?.selected_position?.position === pos && !selectedPlayers.includes(p.player.player_id)
-    );
-    selectedPlayers.push(player?.player?.player_id!);
-    const name = player ? player?.player?.name.full : "Hingle McCringleberry";
-    const score = player ? player.currentScore : 0;
-    const proj = player ? player.projectedScore : 0;
-    return (
-      <tr key={pos + i}>
-        {!props.invert && <td className="px-2 border border-collapse border-lime-400">{name}</td> }
-        <td className="px-2 border border-collapse border-lime-400 text-right">
-          <p>{score}</p>
-          <p className="text-xs text-gray-400">{proj}</p>
-        </td>
-        {props.invert && <td className="px-2 border border-collapse border-lime-400">{name}</td> }
-        {props.displayPosLabels && <th className="px-3" scope="row">{pos}</th>}
-      </tr>
-    );
-  });
-
-  return (
-    <table className={"mt-3"}>
-      <tbody>
-        {rows}
-        <tr>
-          {!props.invert && <td></td>}
-          <td className="px-2 border border-collapse border-lime-400 text-right">
-            <p>{sumPoints(playersInPlay, 'currentScore')}</p>
-            <p className="text-xs text-gray-400">{sumPoints(playersInPlay, 'projectedScore')}</p>
-          </td>
-          {props.invert && <td></td>}
-          {props.displayPosLabels && <td></td> }
-        </tr>
-      </tbody>
-    </table>
-  )
-}
-
-function sumPoints(data: LineupData[], key: 'currentScore' | 'projectedScore') {
-  return round(data.reduce((accumulator, player) => accumulator + player[key], 0));
-}

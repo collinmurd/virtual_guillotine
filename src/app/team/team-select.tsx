@@ -21,7 +21,7 @@ export function TeamSelect(props: TeamSelectProps) {
         <select
           defaultValue={props.defaultId || '1'}
           onChange={(e) => router.replace(queryString(e.target.value))}
-          className="bg-transparent border border-white"
+          className={"bg-transparent border border-white" + (props.compare ? " w-6/12" : "")}
         >
           {options}
         </select>
@@ -29,7 +29,7 @@ export function TeamSelect(props: TeamSelectProps) {
           <select
             defaultValue={props.defaultCompareId || '1'}
             onChange={(e) => router.replace(queryString(props.defaultId || '1', e.target.value))}
-            className="bg-transparent border border-white"
+            className={"bg-transparent border border-white" + (props.compare ? " w-6/12" : "")}
           >
             {options}
           </select>
