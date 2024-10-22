@@ -2,15 +2,12 @@ import * as yahoo from "@/apis/yahoo";
 import { getSession } from "@/session";
 import * as proj from '../stats/projections';
 import { ScoresTable, ScoresTableData } from "./table";
-import { Suspense } from "react";
 import LoadError from "@/shared-components/load-error";
 
 export default async function Page() {
   return (
     <div>
-      <Suspense fallback={<p>Loading...</p>}>
-        <Scoreboard />
-      </Suspense>
+      <Scoreboard />
     </div>
   )
 }

@@ -3,7 +3,6 @@ import { getSession } from "@/session";
 import LoadError from "@/shared-components/load-error";
 import { getTeamProjections, round } from "@/stats/projections";
 import { TeamSelect } from "./team-select";
-import { Suspense } from "react";
 import Link from "next/link";
 
 const positions = [
@@ -39,15 +38,11 @@ export default async function Page({
     compareTeamId = null;
   }
 
-  return (
-    <Suspense key={teamId + " " + compareTeamId} fallback={<p>Loading...</p>}>
-      {
-        compareTeamId ?
-          <Content teamId={teamId} compareTeamId={compareTeamId} />
-          : <Content teamId={teamId} />
-      }
-    </Suspense>
-  )
+  if (compareTeamId) {
+    return <Content teamId={teamId} compareTeamId={compareTeamId} />
+  } else {
+    return <Content teamId={teamId} />
+  }
 }
 
 async function getPlayerScores(league: yahoo.YahooLeague, team: yahoo.YahooTeam) {
