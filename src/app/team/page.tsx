@@ -4,6 +4,7 @@ import LoadError from "@/shared-components/load-error";
 import { getTeamProjections, round } from "@/stats/projections";
 import { TeamSelect } from "./team-select";
 import Link from "next/link";
+import { Suspense } from "react";
 
 const positions = [
   "QB",
@@ -39,9 +40,17 @@ export default async function Page({
   }
 
   if (compareTeamId) {
-    return <Content teamId={teamId} compareTeamId={compareTeamId} />
+    return (
+      <Suspense key={teamId + "," + compareTeamId} fallback={<p>Loading...</p>}>
+        <Content teamId={teamId} compareTeamId={compareTeamId} />
+      </Suspense>
+    )
   } else {
-    return <Content teamId={teamId} />
+    return (
+      <Suspense key={teamId} fallback={<p>Loading...</p>}>
+        <Content teamId={teamId} />
+      </Suspense>
+    )
   }
 }
 
