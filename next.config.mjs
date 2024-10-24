@@ -27,7 +27,7 @@ const nextConfig = {
         source: '/((?!_next/static|_next/image|favicon.ico).*)',
         headers: [
           {
-            key: 'X-Accel-Buffering',
+            key: 'X-Accel-Buffering', // disables nginx buffering on responses for streamed pages
             value: 'no',
           },
         ],
