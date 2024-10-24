@@ -20,6 +20,19 @@ const nextConfig = {
         permanent: false
       }
     ]
+  },
+  async headers() {
+    return [
+      {
+        source: '/((?!_next/static|_next/image|favicon.ico).*)',
+        headers: [
+          {
+            key: 'X-Accel-Buffering',
+            value: 'no',
+          },
+        ],
+      },
+    ]
   }
 };
 
