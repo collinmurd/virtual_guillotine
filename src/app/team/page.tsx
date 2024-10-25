@@ -19,7 +19,7 @@ const positions = [
 ]
 
 export default async function Page({
-  params,
+  params, // eslint-disable-line
   searchParams,
 }: {
   params: any,
