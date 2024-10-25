@@ -23,7 +23,7 @@ export default async function Page({
   searchParams,
 }: {
   params: any,
-  searchParams: { [key: string]: string | string[] | undefined }
+  searchParams: { [key: string]: string | string[] | undefined | null }
 }) {
   if (!(await getSession())) {
     return <></>
@@ -31,7 +31,7 @@ export default async function Page({
 
   let teamId = searchParams.team;
   if (!teamId || typeof teamId === 'object' || isNaN(teamId as any)) {
-    teamId = "1"; // kind of hacky, default to the team with id 1
+    teamId = null;
   }
 
   let compareTeamId: string | null = searchParams.compare as string;
@@ -47,7 +47,7 @@ export default async function Page({
     )
   } else {
     return (
-      <Suspense key={teamId} fallback={<p>Loading...</p>}>
+      <Suspense key={teamId || 'null'} fallback={<p>Loading...</p>}>
         <Content teamId={teamId} />
       </Suspense>
     )
@@ -68,9 +68,10 @@ async function getPlayerScores(league: yahoo.YahooLeague, team: yahoo.YahooTeam)
   return playerScores;
 }
 
-async function Content(props: {teamId: string, compareTeamId?: string}) {
+async function Content(props: {teamId: string | null, compareTeamId?: string}) {
+  let selectedTeamId = props.teamId;
   const [teams, league] = await Promise.all([
-    yahoo.getTeamsWithRoster(),
+    yahoo.getTeamsWithRoster().then(d => d.filter(t => t.roster?.players.length! > 1)),  // greater than 1, sometimes a player gets missed when dropping
     yahoo.getLeague()
   ]).catch(e => {
     console.log(e);
@@ -81,7 +82,13 @@ async function Content(props: {teamId: string, compareTeamId?: string}) {
     return LoadError();
   }
 
-  const team = teams.find(t => t.team_id === props.teamId);
+  let team;
+  if (!selectedTeamId) {
+    team = teams[0];
+    selectedTeamId = team.team_id;
+  } else {
+    team = teams.find(t => t.team_id === selectedTeamId);
+  }
   const playerScores = await getPlayerScores(league, team!);
 
   let comparePlayerScores = null;
@@ -102,17 +109,17 @@ async function Content(props: {teamId: string, compareTeamId?: string}) {
         <div>
           <div className="flex flex-col items-center">
             {!comparePlayerScores ? 
-              <TeamSelect teams={teamSelectData} defaultId={props.teamId} /> :
-              <TeamSelect teams={teamSelectData} defaultId={props.teamId} compare defaultCompareId={props.compareTeamId} />
+              <TeamSelect teams={teamSelectData} defaultId={selectedTeamId} /> :
+              <TeamSelect teams={teamSelectData} defaultId={selectedTeamId} compare defaultCompareId={props.compareTeamId} />
             }
             {!comparePlayerScores ?
               <Link
-                href={`/team?team=${props.teamId}&compare=${props.teamId}`}
+                href={`/team?team=${selectedTeamId}&compare=${selectedTeamId}`}
                 replace 
                 className="underline my-1">Compare
                 </Link> :
               <Link
-                href={`/team?team=${props.teamId}`}
+                href={`/team?team=${selectedTeamId}`}
                 replace 
                 className="underline my-1">Stop Comparing
                 </Link>
