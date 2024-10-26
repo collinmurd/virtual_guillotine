@@ -42,7 +42,7 @@ export function Lineup(props: {data: LineupPlayerData[], compareData?: LineupPla
   });
 
   return (
-    <table className={"mt-3 text-xs sm:text-base w-full table-fixed" + (isComparing ? "" : " max-w-sm")}>
+    <table className={"mt-3 text-xs sm:text-base w-full mx-auto table-fixed" + (isComparing ? "" : " max-w-sm")}>
       <tbody>
         {rows}
         {isComparing ?
