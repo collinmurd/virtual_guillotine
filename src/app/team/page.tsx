@@ -81,33 +81,31 @@ async function Content(props: {teamId: string | null, compareTeamId?: string}) {
 
   return (
     <div>
-      <div className="flex">
+      <div>
+        <div className="flex flex-col items-center w-full">
+          {!comparePlayerScores ? 
+            <TeamSelect teams={teamSelectData} defaultId={selectedTeamId} /> :
+            <TeamSelect teams={teamSelectData} defaultId={selectedTeamId} compare defaultCompareId={props.compareTeamId} />
+          }
+          {!comparePlayerScores ?
+            <Link
+              href={`/team?team=${selectedTeamId}&compare=${selectedTeamId}`}
+              replace 
+              className="underline my-1">Compare
+              </Link> :
+            <Link
+              href={`/team?team=${selectedTeamId}`}
+              replace 
+              className="underline my-1">Stop Comparing
+              </Link>
+          }
+        </div>
         <div>
-          <div className="flex flex-col items-center w-full">
-            {!comparePlayerScores ? 
-              <TeamSelect teams={teamSelectData} defaultId={selectedTeamId} /> :
-              <TeamSelect teams={teamSelectData} defaultId={selectedTeamId} compare defaultCompareId={props.compareTeamId} />
-            }
-            {!comparePlayerScores ?
-              <Link
-                href={`/team?team=${selectedTeamId}&compare=${selectedTeamId}`}
-                replace 
-                className="underline my-1">Compare
-                </Link> :
-              <Link
-                href={`/team?team=${selectedTeamId}`}
-                replace 
-                className="underline my-1">Stop Comparing
-                </Link>
-            }
-          </div>
-          <div className="flex">
-            {comparePlayerScores ? 
-              <Lineup data={playerScores} compareData={comparePlayerScores} />
-              :
-              <Lineup data={playerScores}/>
-            }
-          </div>
+          {comparePlayerScores ? 
+            <Lineup data={playerScores} compareData={comparePlayerScores} />
+            :
+            <Lineup data={playerScores}/>
+          }
         </div>
       </div>
     </div>
