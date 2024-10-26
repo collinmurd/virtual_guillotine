@@ -5,6 +5,7 @@ import { getTeamProjections } from "@/stats/projections";
 import { TeamSelect } from "./team-select";
 import Link from "next/link";
 import { Lineup } from "./lineup-table";
+import { Suspense } from "react";
 
 export default async function Page({
   params, // eslint-disable-line
@@ -42,20 +43,6 @@ export default async function Page({
   }
 }
 
-async function getPlayerScores(league: yahoo.YahooLeague, team: yahoo.YahooTeam) {
-  const playerScores = await getTeamProjections(league.current_week, team.team_id);
-  // fill in "roster" player data with "stats" player data... thanks yahoo
-  playerScores.forEach(ps => {
-    if (ps.player) {
-      ps.player!.selected_position = team?.roster?.players!.find(p =>
-        p.player.player_id === ps.player?.player_id
-      )?.player.selected_position;
-    }
-  });
-
-  return playerScores;
-}
-
 async function Content(props: {teamId: string | null, compareTeamId?: string}) {
   let selectedTeamId = props.teamId;
   const [teams, league] = await Promise.all([
@@ -77,11 +64,12 @@ async function Content(props: {teamId: string | null, compareTeamId?: string}) {
   } else {
     team = teams.find(t => t.team_id === selectedTeamId);
   }
-  const playerScores = await getPlayerScores(league, team!);
+  const playerScores = (await getPlayerScores(league, team!)).filter(p => p.player?.selected_position!.position != 'BN');
 
   let comparePlayerScores = null;
   if (props.compareTeamId) {
-    comparePlayerScores = await getPlayerScores(league, teams.find(t => t.team_id === props.compareTeamId)!);
+    comparePlayerScores = (await getPlayerScores(league, teams.find(t => t.team_id === props.compareTeamId)!))
+      .filter(p => p.player?.selected_position!.position != 'BN');
   }
 
   const teamSelectData = teams.map(t => {
@@ -114,8 +102,11 @@ async function Content(props: {teamId: string | null, compareTeamId?: string}) {
             }
           </div>
           <div className="flex">
-            <Lineup data={playerScores} displayPosLabels invert={false} />
-            {comparePlayerScores && <Lineup data={comparePlayerScores} displayPosLabels={false} invert />}
+            {comparePlayerScores ? 
+              <Lineup data={playerScores} compareData={comparePlayerScores} />
+              :
+              <Lineup data={playerScores}/>
+            }
           </div>
         </div>
       </div>
@@ -123,3 +114,16 @@ async function Content(props: {teamId: string | null, compareTeamId?: string}) {
   )
 }
 
+async function getPlayerScores(league: yahoo.YahooLeague, team: yahoo.YahooTeam) {
+  const playerScores = await getTeamProjections(league.current_week, team.team_id);
+  // fill in "roster" player data with "stats" player data... thanks yahoo
+  playerScores.forEach(ps => {
+    if (ps.player) {
+      ps.player!.selected_position = team?.roster?.players!.find(p =>
+        p.player.player_id === ps.player?.player_id
+      )?.player.selected_position;
+    }
+  });
+
+  return playerScores;
+}
