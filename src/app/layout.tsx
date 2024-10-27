@@ -46,7 +46,7 @@ async function Header() {
       <nav className="flex justify-center">
         <Link href="/" className="mx-2 underline">Scores</Link>
         <Link href="/team" className="mx-2 underline">Teams</Link>
-        <Link href="/transactions" className="mx-2 underline">Transactions</Link>
+        <Link href="/transactions" className="mx-2 underline">FAB Results</Link>
       </nav>
     </header>
   )
