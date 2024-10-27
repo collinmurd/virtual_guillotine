@@ -26,6 +26,7 @@ describe('getTransactions', () => {
 
     expect(result!.teamId).toEqual(6);
     expect(result!.winningBid).toEqual(188);
+    expect(result!.date).toEqual("Oct 23");
   });
 
   test('contains information on transaction losers', async () => {

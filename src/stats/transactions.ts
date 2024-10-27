@@ -6,6 +6,7 @@ export interface Transaction {
   playerId: number,
   teamId: number,
   winningBid: number,
+  date: string,
   failedBids: {
     teamId: number,
     bid: number
@@ -31,11 +32,13 @@ export async function getTransactions(page: number = 1): Promise<Transaction[]> 
 
     const secondColumn = row.children[3]; // last td element
     const winningTeamLink = secondColumn.querySelector("span")?.querySelector("a"); // first a inside first span
+    const date = secondColumn.querySelector("span")?.querySelector("span"); // first span inside first span
 
     result.push({
       playerId: parseInt(playerLink.getAttribute('data-ys-playerid')!),
       teamId: parseInt(winningTeamLink?.href.split("/").at(-1)!),
       winningBid: parseInt(winningBid?.textContent?.match(/\$([0-9]+) Winning Offer/)![1]!),
+      date: date?.textContent?.split(",")[0]!,
       failedBids: losingBids?.values()!.map(p => {
         return {
           teamId: parseInt(p.querySelector("a")?.href.split("/").at(-1)!), // first a
