@@ -25,7 +25,7 @@ export default function RootLayout({
   return (
     <html lang="en" className={`${sourceCodePro.variable}`}>
       <body>
-        <div className="p-3 max-w-2xl text-sm sm:text-base tracking-tight sm:tracking-normal">
+        <div className="p-3 max-w-2xl text-sm sm:text-base">
           <Header />
           {children}
         </div>
