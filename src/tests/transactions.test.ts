@@ -25,6 +25,8 @@ describe('getTransactions', () => {
     const result = (await getTransactions()).find(t => t.playerId === 30182); // Cooper Kupp
 
     expect(result!.teamId).toEqual(6);
+    expect(result!.teamName).toEqual("Guillotine Evader Evan");
+    expect(result!.playerName).toEqual("Cooper Kupp");
     expect(result!.winningBid).toEqual(188);
     expect(result!.date).toEqual("Oct 23");
   });
@@ -35,6 +37,7 @@ describe('getTransactions', () => {
     expect(result!.failedBids.length).toEqual(1);
     expect(result!.failedBids[0].bid).toEqual(0);
     expect(result!.failedBids[0].teamId).toEqual(11);
+    expect(result!.failedBids[0].teamName).toEqual("Basket Casey Anthony");
   });
 
   test('parses defenses correctly', async () => {
@@ -42,6 +45,8 @@ describe('getTransactions', () => {
 
     expect(result).toBeTruthy();
     expect(result!.teamId).toEqual(17);
+    expect(result!.teamName).toEqual("B's Knights of the Round Table");
+    expect(result!.playerName).toEqual("Detroit");
     expect(result!.winningBid).toEqual(2);
     expect(result!.failedBids.length).toEqual(2);
   });
