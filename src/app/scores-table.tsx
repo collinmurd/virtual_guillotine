@@ -65,11 +65,11 @@ export function ScoresTable(props: {data: ScoresTableData[]}) {
     );
   });
 
-  const tableContents = sort(props.data, currentSort.key, currentSort.desc).map(row => {
+  const tableContents = sort(props.data, currentSort.key, currentSort.desc).map((row, i) => {
     return (
       <tr key={row.teamId}>
         <TableCell header={false} extraClasses="text-right whitespace-nowrap overflow-hidden text-ellipsis">
-          <Link href={"guillotine/team?team=" + row.teamId}>
+          <Link href={"guillotine/team?team=" + row.teamId} className={getManagerClass(props.data, i)}>
             {row.manager}
           </Link>
         </TableCell>
@@ -106,4 +106,23 @@ function TableCell(props: {children?: React.ReactNode, header: boolean, extraCla
       <td className={(props.extraClasses || '') + " w-20 border border-collapse border-lime-400 px-1"}>{props.children}</td>
     );
   }
+}
+
+function getManagerClass(rows: ScoresTableData[], index: number) {
+  let cutline: string | null = null;
+  let min = Number.MAX_VALUE;
+  rows.filter(r => r.proj === r.score).forEach(r => {
+    if (r.score < min) {
+      min = r.score;
+      cutline = r.manager;
+    }
+  });
+
+  if (rows[index].proj === 0) {
+    return "text-red-400"
+  } else if (rows[index].manager === cutline) {
+    return "text-yellow-400"
+  }
+
+  return "";
 }
