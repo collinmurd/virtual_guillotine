@@ -56,6 +56,18 @@ export async function getTeamWithPlayersAndStats(teamId: string, week: string = 
   return (await resp.json()).fantasy_content.team;
 }
 
+export async function getFABTransactions(page: number = 1): Promise<string> {
+  let count = "";
+  if (page > 1) {
+    count = "&count=" + (page - 1) * 25;
+  }
+  const resp = await fetch(
+    'https://football.fantasysports.yahoo.com/f1/268706/transactions?transactionsfilter=faab&ajaxrequest=1' + count
+  )
+
+  return (await resp.json()).content;
+}
+
 // TYPES
 export interface YahooLeague {
   league_id: string,
