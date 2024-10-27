@@ -22,9 +22,12 @@ export default async function Page({
   }
 
   return (
-    <Suspense fallback={<LoadingFallback />}>
-      <Content page={page} />
-    </Suspense>
+    <div>
+      <Suspense fallback={<LoadingFallback />}>
+        <Content page={page} />
+      </Suspense>
+      <Paginator currentPage={page}/>
+    </div>
   )
 }
 
@@ -46,7 +49,9 @@ async function Content(props: {page: number}) {
           <p>{t.date}</p>
         </div>
         <table>
-          {bidRows}
+          <tbody>
+            {bidRows}
+          </tbody>
         </table>
       </div>
     )
@@ -66,4 +71,21 @@ function BidRow(props: {teamId: number, teamName: string, bid: number, className
       <td><Link href={"guillotine/team?team=" + props.teamId}>{props.teamName}</Link></td>
     </tr>
   )
+}
+
+function Paginator(props: {currentPage: number}) {
+  if (props.currentPage > 1) {
+    return (
+      <div className="flex justify-evenly">
+        <Link href={"transactions?page=" + (props.currentPage - 1)}>&lt; Prev</Link>
+        <Link href={"transactions?page=" + (props.currentPage + 1)}>Next &gt;</Link>
+      </div>
+    )
+  } else {
+    return (
+      <div className="flex justify-evenly">
+        <Link href={"transactions?page=" + (props.currentPage + 1)}>Next &gt;</Link>
+      </div>
+    )
+  }
 }
