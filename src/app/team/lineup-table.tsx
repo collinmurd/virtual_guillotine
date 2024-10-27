@@ -72,13 +72,13 @@ function LineupRow(props: LineupRowProps) {
   return (
     <tr>
       <td className="px-2 border border-collapse border-lime-400">{props.playerA.name}</td>
-      <td className="px-2 border border-collapse border-lime-400 text-right w-14">
+      <td className="px-2 border border-collapse border-lime-400 text-right w-14 sm:w-20">
         <p>{props.playerA.score}</p>
         <p className="text-[10px] text-gray-400">{props.playerA.proj}</p>
       </td>
       <th className="px-1 sm:px-3 w-[12%]" scope="row">{props.position}</th>
       {props.playerB &&
-        <td className="px-2 border border-collapse border-lime-400 text-right w-14">
+        <td className="px-2 border border-collapse border-lime-400 text-right w-14 sm:w-20">
           <p>{props.playerB.score}</p>
           <p className="text-[10px] text-gray-400">{props.playerB.proj}</p>
         </td>
@@ -98,13 +98,13 @@ function TotalsRow(props: TotalsRowProps) {
   return (
     <tr>
       <td></td>
-      <td className="px-2 border border-collapse border-lime-400 text-right w-14">
+      <td className="px-2 border border-collapse border-lime-400 text-right w-14 sm:w-20">
         <p>{props.playerAScore}</p>
         <p className="text-[10px] text-gray-400">{props.playerAProj}</p>
       </td>
       <td></td>
       {props.playerBScore != undefined &&
-        <td className="px-2 border border-collapse border-lime-400 text-right w-14">
+        <td className="px-2 border border-collapse border-lime-400 text-right w-14 sm:w-20">
           <p>{props.playerBScore}</p>
           <p className="text-[10px] text-gray-400">{props.playerBProj}</p>
         </td>
