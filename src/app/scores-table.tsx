@@ -111,7 +111,7 @@ function TableCell(props: {children?: React.ReactNode, header: boolean, extraCla
 function getManagerClass(rows: ScoresTableData[], index: number) {
   let cutline: string | null = null;
   let min = Number.MAX_VALUE;
-  rows.filter(r => r.proj === r.score).forEach(r => {
+  rows.filter(r => r.proj === r.score && r.proj !== 0).forEach(r => {
     if (r.score < min) {
       min = r.score;
       cutline = r.manager;
