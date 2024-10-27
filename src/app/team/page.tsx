@@ -6,6 +6,7 @@ import { TeamSelect } from "./team-select";
 import Link from "next/link";
 import { Lineup } from "./lineup-table";
 import { Suspense } from "react";
+import { LoadingFallback } from "@/shared-components/loading-fallback";
 
 export default async function Page({
   params, // eslint-disable-line
@@ -30,13 +31,13 @@ export default async function Page({
 
   if (compareTeamId) {
     return (
-      <Suspense key={teamId + "," + compareTeamId} fallback={<p>Loading...</p>}>
+      <Suspense key={teamId + "," + compareTeamId} fallback={<LoadingFallback />}>
         <Content teamId={teamId} compareTeamId={compareTeamId} />
       </Suspense>
     )
   } else {
     return (
-      <Suspense key={teamId || 'null'} fallback={<p>Loading...</p>}>
+      <Suspense key={teamId || 'null'} fallback={<LoadingFallback />}>
         <Content teamId={teamId} />
       </Suspense>
     )

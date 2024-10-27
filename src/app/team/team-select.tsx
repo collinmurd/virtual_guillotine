@@ -20,7 +20,7 @@ export function TeamSelect(props: TeamSelectProps) {
       <div className="flex">
         <select
           defaultValue={props.defaultId || '1'}
-          onChange={(e) => router.replace(queryString(e.target.value))}
+          onChange={(e) => router.replace(queryString(e.target.value, props.defaultCompareId))}
           className={"bg-transparent border border-white mx-1" + (props.compare ? " w-6/12" : "")}
         >
           {options}
