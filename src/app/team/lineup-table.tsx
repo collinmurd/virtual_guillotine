@@ -63,15 +63,24 @@ export function Lineup(props: {data: LineupPlayerData[], compareData?: LineupPla
   )
 }
 
+interface LineupRowPlayer {
+  name: string,
+  teamAbbr: string,
+  score: number,
+  proj: number
+}
 interface LineupRowProps {
   position: string,
-  playerA: {name: string, score: number, proj: number}
-  playerB?: {name: string, score: number, proj: number}
+  playerA: LineupRowPlayer
+  playerB?: LineupRowPlayer
 }
 function LineupRow(props: LineupRowProps) {
   return (
     <tr>
-      <td className="px-2 border border-collapse border-lime-400">{props.playerA.name}</td>
+      <td className="px-1 border border-collapse border-lime-400">
+        <p>{props.playerA.name}</p>
+        <p className="text-[10px] text-gray-400">{props.playerA.teamAbbr}</p>
+      </td>
       <td className="px-2 border border-collapse border-lime-400 text-right w-14 sm:w-20">
         <p>{props.playerA.score}</p>
         <p className="text-[10px] text-gray-400">{props.playerA.proj}</p>
@@ -83,7 +92,12 @@ function LineupRow(props: LineupRowProps) {
           <p className="text-[10px] text-gray-400">{props.playerB.proj}</p>
         </td>
       }
-      {props.playerB && <td className="px-2 border border-collapse border-lime-400">{props.playerB.name}</td>}
+      {props.playerB && 
+        <td className="px-1 border border-collapse border-lime-400">
+          <p>{props.playerB.name}</p>
+          <p className="text-[10px] text-gray-400">{props.playerB.teamAbbr}</p>
+        </td>
+      }
     </tr>
   );
 }
@@ -138,16 +152,18 @@ function findPlayer(data: LineupPlayerData[], pos: string, selectedPlayerIds: st
   return result || null;
 }
 
-function playerRowDetails(data: LineupPlayerData | null, abbrName: boolean = true): {name: string, score: number, proj: number} {
+function playerRowDetails(data: LineupPlayerData | null, abbrName: boolean = true): LineupRowPlayer {
   if (data) {
     return {
       name: abbrName ? abbrPlayerName(data.player!): data.player?.name.full!,
+      teamAbbr: data.player?.editorial_team_abbr!,
       score: data.currentScore,
       proj: data.projectedScore
     }
   } else {
     return {
       name: abbrName ? "H. McCringleberry" : "Hingle McCringleberry",
+      teamAbbr: "N/A",
       score: 0,
       proj: 0
     }
