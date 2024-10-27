@@ -4,6 +4,7 @@ import { IconCaretDownFilled, IconCaretUpFilled } from "@tabler/icons-react";
 import { useSearchParams } from "next/navigation";
 import React, { useState } from "react";
 import { usePathnameWithBasepath } from "../hooks";
+import Link from "next/link";
 
 export interface ScoresTableData {
   teamId: string,
@@ -67,7 +68,11 @@ export function ScoresTable(props: {data: ScoresTableData[]}) {
   const tableContents = sort(props.data, currentSort.key, currentSort.desc).map(row => {
     return (
       <tr key={row.teamId}>
-        <TableCell header={false} extraClasses="text-right whitespace-nowrap overflow-hidden text-ellipsis">{row.manager}</TableCell>
+        <TableCell header={false} extraClasses="text-right whitespace-nowrap overflow-hidden text-ellipsis">
+          <Link href={"guillotine/team?team=" + row.teamId}>
+            {row.manager}
+          </Link>
+        </TableCell>
         <TableCell header={false}>{row.score}</TableCell>
         <TableCell header={false}>{row.proj}</TableCell>
       </tr>
