@@ -3,11 +3,15 @@ import { getSession } from "@/session";
 import * as proj from '../stats/projections';
 import { ScoresTable, ScoresTableData } from "./scores-table";
 import LoadError from "@/shared-components/load-error";
+import { Suspense } from "react";
+import { LoadingFallback } from "@/shared-components/loading-fallback";
 
 export default async function Page() {
   return (
     <div>
-      <Scoreboard />
+      <Suspense fallback={<LoadingFallback />}>
+        <Scoreboard />
+      </Suspense>
     </div>
   )
 }
