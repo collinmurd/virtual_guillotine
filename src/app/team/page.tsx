@@ -65,7 +65,7 @@ async function Content(props: {teamId: string | null, compareTeamId?: string}) {
   } else {
     team = teams.find(t => t.team_id === selectedTeamId);
   }
-  const playerScores = (await getPlayerScores(league, team!)).filter(p => p.player?.selected_position!.position != 'BN');
+  const playerScores = (await getPlayerScores(league, team!)).filter(p => !['BN', 'IR'].includes(p.player?.selected_position!.position!));
 
   let comparePlayerScores = null;
   if (props.compareTeamId) {
