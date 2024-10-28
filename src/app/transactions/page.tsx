@@ -76,14 +76,14 @@ function BidRow(props: {teamId: number, teamName: string, bid: number, className
 function Paginator(props: {currentPage: number}) {
   if (props.currentPage > 1) {
     return (
-      <div className="flex justify-evenly">
+      <div className="flex justify-evenly mb-3">
         <Link href={"transactions?page=" + (props.currentPage - 1)}>&lt; Prev</Link>
         <Link href={"transactions?page=" + (props.currentPage + 1)}>Next &gt;</Link>
       </div>
     )
   } else {
     return (
-      <div className="flex justify-evenly">
+      <div className="flex justify-evenly mb-3">
         <Link href={"transactions?page=" + (props.currentPage + 1)}>Next &gt;</Link>
       </div>
     )
