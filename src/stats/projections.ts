@@ -39,13 +39,22 @@ function calculateCurrentPlayerScore(player: yahoo.YahooPlayer): number {
 }
 
 function calculateRemainingPlayerProjection(game: GameStatus | null, playerProjections: {[stat: string]: number}): number {
-  // ignoring OT possibilities for now
   let gameProgressRemaining = 1;
   if (game) {
-    const quartersCompleted = game.quarter - 1;
-    const secondsCompletedInQuarter = 60 * 15 - game.clock; 
-    const completedSeconds = quartersCompleted * 60 * 15 + secondsCompletedInQuarter;
-    gameProgressRemaining = 1 - (completedSeconds / 3600);
+    if (game.quarter > 4) {
+      // overtime!
+      const quartersCompleted = 4;
+      const secondsCompletedInQuarter = 60 * 10 - game.clock; 
+      const completedSeconds = quartersCompleted * 60 * 15 + secondsCompletedInQuarter;
+      gameProgressRemaining = 1 - (completedSeconds / (3600 + 600));
+
+    } else {
+      // regulation
+      const quartersCompleted = game.quarter - 1;
+      const secondsCompletedInQuarter = 60 * 15 - game.clock; 
+      const completedSeconds = quartersCompleted * 60 * 15 + secondsCompletedInQuarter;
+      gameProgressRemaining = 1 - (completedSeconds / 3600);
+    }
   }
 
   return Object.entries(playerProjections).reduce((accumulator, [stat, value]) => {
